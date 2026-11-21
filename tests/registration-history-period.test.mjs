@@ -48,10 +48,10 @@ test('dated THW special code cannot appear in 1986 or before November 1996',()=>
  const after=generateHistoricalRegistrations(basic('DE','DE_NEW',1996,1996,['B'],{fromMonth:11,toMonth:12,categories:{thw:{enabled:true,weight:1}}}));
  assert.ok(after.rows.every(x=>x.startsWith('THW-')));
 });
-test('1975 and 1985 East Germany NVA VA codes differ and remain separate from civilian',()=>{
+test('1975 and 1985 NVA VA codes use two-digit first group; 1976 modifies allocations',()=>{
  const a=generateHistoricalRegistrations(basic('DD','DE_GDR_NEW',1975,1975,['I'],{categories:{nva:{enabled:true,weight:1}}}));
  const b=generateHistoricalRegistrations(basic('DD','DE_GDR_NEW',1985,1985,['I'],{categories:{nva:{enabled:true,weight:1}}}));
- assert.ok(allMatch(a.rows,/^VA [1-9]-\d{4}$/));
+ assert.ok(allMatch(a.rows,/^VA \d{2}-\d{4}$/));
  assert.ok(allMatch(b.rows,/^VA \d{2}-\d{4}$/));
 });
 test('Swiss historical Post and Federal agencies not newly issued in 2020',()=>{
@@ -107,4 +107,11 @@ test('Swiss old agency series cannot remain after 2004 in street mode',()=>{
 });
 test('future Hungarian civilian first letter cannot be mistaken as already issued',()=>{
  assert.throws(()=>generateHistoricalRegistrations(basic('HU','HU_NEW',2029,2029,[],{count:5})),/még nem|nem állapítható/i);
+});
+
+test('1957 historical NVA one-digit prefix and 1970 two-digit prefix are distinguished',()=>{
+ const pre=specialRulesFor('DE_GDR_OLD','nva',1957,'I',{scheme:'DE_GDR_OLD',month:6});
+ const later=specialRulesFor('DE_GDR_OLD','nva',1970,'I',{scheme:'DE_GDR_OLD',month:6});
+ assert.match(pre.title,/egyjegyű/);
+ assert.match(later.title,/kétjegyű/);
 });
