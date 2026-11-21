@@ -112,7 +112,7 @@ const RULES=[
  ['scania[_ -]?(?:r420|r620|p250)',2004,2026,'Scania LKW','international','truck',''],
  ['daf[_ -]?xf[_ -]?105',2005,2013,'DAF XF 105','international','truck','']
 ].map(([pattern,start,end,label,origin,kind,source])=>({regex:new RegExp(pattern,'i'),start,end,label,origin,kind,source}));
-const S3D=String.raw\`Citroen_Berlingo_II|2008|2018|van
+const S3D=String.raw`Citroen_Berlingo_II|2008|2018|van
 Citroen_Berlingo_Multispace_II|2008|2018|van
 Citroen_Berlingo_Multispace_II_FL|2012|2018|van
 Citroen_C15|1984|2005|van
@@ -160,7 +160,7 @@ Renault_Kangoo_Van|1997|2026|van
 Renault_Laguna_I|1994|2001|car
 Renault_Laguna_II|2001|2007|car
 Renault_Megane_Coupe|1996|2016|car
-Renault_Traffic|1980|2026|van\`.split('\n').map(x=>x.split('|'));
+Renault_Traffic|1980|2026|van`.split('\n').map(x=>x.split('|'));
 const S3D_MODELS=new Map(S3D.map(([key,start,end,kind])=>[key.toLowerCase(),{start:+start,end:+end,kind,label:key.replace(/^MR6_/,'').replaceAll('_',' ').replaceAll('-',' '),origin:'international',source:'pack'}]));
 const trim=s=>String(s||'').trim(),clean=s=>trim(s).replaceAll('/','\\');
 function classify(path){
@@ -199,7 +199,7 @@ const rawPark=REFERENCE_PARK.map((line,index)=>({...classify(line),index,type:'p
 export function catalogItems(type='both'){return type==='ai'?rawAI:type==='park'?rawPark:[...rawAI,...rawPark];}
 function baseCountry(country){return ({UK:'GB',H:'HU'})[country]||country;}
 function plateScore(x,opts,year){
- if(!x.s3d)return 0;
+ if(!x.s3d||x.type==='park')return 0;
  const target=baseCountry(opts.country||'DE');
  if(!x.plateCountry||x.plateCountry!==target)return -500;
  if(['export','kurz','zabytkowe','taxi','police'].includes(x.plateType))return opts.special?4:-180;
@@ -252,8 +252,8 @@ function dateScore(x,year,uncertain){
  if(!x.known)return uncertain?-25:-500;
  if(x.modelStart>year)return -500;
  const age=year-x.modelStart, afterEnd=year-x.modelEnd;
- if(afterEnd>28)return -220;
- if(afterEnd>17)return -55;
+ if(afterEnd>18)return -500;
+ if(afterEnd>12)return -45;
  if(afterEnd>8)return -18;
  if(age<=3)return 8; // new car but not necessarily widespread
  if(age<=14)return 28;
@@ -288,7 +288,8 @@ export function recommendCatalog(options={}){
  const eligible=x=>!filter||[x.label,x.path,x.basename].some(s=>s.toLowerCase().includes(filter));
  const ai=rawAI.filter(eligible).map(x=>({...x,score:scoreCatalog(x,{...opts,year})})).filter(x=>x.score>0).sort(compare);
  const preferred=[],seen=new Set();
- for(const r of ai){if(seen.has(r.pathKey))continue;seen.add(r.pathKey);preferred.push(r);if(preferred.length>=maxAI)break;}
+ for(const r of ai){const dedup=r.label.toLowerCase()+'|'+r.kind;
+  if(seen.has(dedup))continue;seen.add(dedup);preferred.push(r);if(preferred.length>=maxAI)break;}
  const p=rawPark.filter(eligible).map(x=>({...x,score:scoreCatalog(x,{...opts,year})})).filter(x=>x.score>0).sort(compare);
  const selectedPark=[],selectedParkPaths=new Set();
  for(const a of preferred){
@@ -296,7 +297,7 @@ export function recommendCatalog(options={}){
   if(paired&&!selectedParkPaths.has(paired.path)){selectedPark.push(paired);selectedParkPaths.add(paired.path);}
  }
  for(const x of p){if(selectedPark.length>=maxPark)break;if(selectedParkPaths.has(x.path))continue;
-  if(selectedPark.some(y=>y.pathKey===x.pathKey))continue;
+  if(selectedPark.some(y=>y.label===x.label&&y.kind===x.kind))continue;
   selectedPark.push(x);selectedParkPaths.add(x.path);
  }
  const parkByKey=new Map(selectedPark.map(x=>[x.pathKey,x]));
