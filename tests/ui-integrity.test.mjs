@@ -14,6 +14,7 @@ test('new tabs and modules are visible and version is coherent',()=>{
  for(const id of ['registrations','fleetratios'])assert.match(html,new RegExp('id="'+id+'"'));
  assert.match(html,/data-tab="registrations"/);
  assert.match(html,/data-tab="fleetratios"/);
+ assert.match(html,/v1\.5\.0/);
  assert.match(html,/v1\.4\.0/);
  assert.match(app,/registrations\.mjs/);
  assert.match(app,/fleet-evidence\.mjs/);
