@@ -21,6 +21,8 @@ jobs:
           node --check engine.mjs
           node --check traffic.mjs
           node --check app.mjs
+          node --check catalog-data.mjs
+          node --check catalog-core.mjs
       - name: Regression tests
         run: node --test tests/*.test.mjs
   publish:
