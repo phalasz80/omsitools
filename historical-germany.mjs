@@ -48,7 +48,7 @@ const CORPUS=new Set(['DE-BW','DE-BY','DE-HE','DE-NW','DE-RP','DE-SL']);
 const ALL_SAINTS=new Set(['DE-BW','DE-BY','DE-NW','DE-RP','DE-SL']);
 export function germanHistoricalPublic(year,regime,region=''){
  if(!Number.isInteger(year)||year<1970||year>2019)throw new Error('Történeti német évhatár: 1970–2019.');
- if(!['FRG','GDR'].includes(regime))throw new Error('Az 1990 előtti német állam kiválasztása szükséges.');
+ if(!['FRG','GDR','REUNIFIED'].includes(regime))throw new Error('Ismeretlen német állam-/korszakválasztás.');
  const e=easter(year),out=[];
  const push=(event)=>out.push(event);
  push(fixed(year,'0101','Neujahr'));
@@ -66,6 +66,7 @@ export function germanHistoricalPublic(year,regime,region=''){
  }else{
   push(relative(year,e,1,'Ostermontag'));
   push(relative(year,e,39,'Christi Himmelfahrt'));
+  if(regime==='GDR'&&year===1990){push(relative(year,e,0,'Ostersonntag'));push(relative(year,e,49,'Pfingstsonntag'));}
   if(year<1991&&regime==='FRG')push(fixed(year,'0617','Tag der deutschen Einheit (17. Juni)'));
   if(year>=1990)push(fixed(year,'1003','Tag der Deutschen Einheit (3. Oktober)'));
   if(year<1991&&regime==='FRG'){
@@ -96,13 +97,14 @@ export function germanHistoricalSchool(year,regime){
  return regime==='GDR'&&year===1970?DDR_SCHOOLS_1970.map(([start,end,name])=>({kind:'school',start,end,name})):[];
 }
 export function germanHistoricalYear(place,year,setting='auto'){
- const regime=germanHistoricRegime(place,setting,year);
+ const regime=year>1990?'REUNIFIED':germanHistoricRegime(place,setting,year);
  const events=germanHistoricalPublic(year,regime,place.subdivision);
  const school=germanHistoricalSchool(year,regime);
  const transition=year===1990;
  const publicStatus=regime==='GDR'&&year<1990?'TÖRTÉNETI SZABÁLY':'RÉSZLEGES';
  const notes=[
   transition?'1990 átmeneti év: a 3. októberi újraegyesítés és a májusi NDK-ünneprendelet miatt helyi szabályok ellenőrzendők.':
+  regime==='REUNIFIED'?'1991–2019: csak a német országos ünnepnapi alap. A tartományi és helyi eltéréseket külön archív forrásból kell pótolni.':
   regime==='FRG'?'Az NSZK tartományi, felekezeti és városi ünnepnapjai nem mindenütt igazoltak teljeskörűen; a naptár részleges.':
   'Az NDK 1967 utáni általános munkaszüneti napjainak történeti rekonstrukciója.',
   year===1970&&regime==='GDR'?'Az 1970-es NDK-iskolaszünetek történeti naptárból átvett dátumai másodlagos források, további levéltári ellenőrzés ajánlott.':

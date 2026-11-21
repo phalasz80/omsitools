@@ -55,3 +55,10 @@ test('2020+ remains API-backed and 1970–2027 timezone composes',()=>{
  assert.match(t.text,/19800406/);
  assert.doesNotMatch(t.text,/19750406/);
 });
+
+test('Modern Berlin 2017 does not require GDR or FRG choice',()=>{
+ const p={country:'DE',subdivision:'DE-BE',name:'Berlin'};
+ const r=germanHistoricalYear(p,2017,'auto');
+ assert.ok(r.events.some(x=>x.start==='20171003'));
+ assert.equal(r.coverage[0].status,'RÉSZLEGES');
+});
