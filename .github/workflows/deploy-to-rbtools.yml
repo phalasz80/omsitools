@@ -23,6 +23,8 @@ jobs:
           node --check app.mjs
           node --check catalog-data.mjs
           node --check catalog-core.mjs
+          node --check registrations.mjs
+          node --check fleet-evidence.mjs
       - name: Regression tests
         run: node --test tests/*.test.mjs
   publish:
@@ -61,7 +63,7 @@ jobs:
           set -euo pipefail
           mkdir -p rbtools/omsitools
           find rbtools/omsitools -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
-          cp omsi-src/index.html omsi-src/style.css omsi-src/app.mjs omsi-src/engine.mjs omsi-src/traffic.mjs omsi-src/geography.mjs omsi-src/calendar-sources.mjs omsi-src/README.md omsi-src/CHANGELOG.md omsi-src/CATALOG_RESEARCH.md omsi-src/example_overrides.csv rbtools/omsitools/
+          cp omsi-src/index.html omsi-src/style.css omsi-src/app.mjs omsi-src/engine.mjs omsi-src/traffic.mjs omsi-src/geography.mjs omsi-src/calendar-sources.mjs omsi-src/README.md omsi-src/CHANGELOG.md omsi-src/CATALOG_RESEARCH.md omsi-src/registrations.mjs omsi-src/fleet-evidence.mjs omsi-src/example_overrides.csv rbtools/omsitools/
           cd rbtools
           git config user.name "omsitools-deploy[bot]"
           git config user.email "omsitools-deploy@users.noreply.github.com"
