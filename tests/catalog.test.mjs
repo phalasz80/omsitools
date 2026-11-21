@@ -58,3 +58,17 @@ test('Hungarian 2001 excludes EU and new plates',()=>{
  const r=recommendCatalog({country:'HU',region:'HU-BU',year:2001,maxAI:250,maxPark:2});
  assert.ok(r.ai.filter(x=>x.s3d).every(x=>x.plateType==='old'));
 });
+
+test('park maximum is a real upper bound, even with many AI/park pairs',()=>{
+ const r=recommendCatalog({country:'DE',region:'DE-BW',year:2016,maxAI:90,maxPark:4});
+ assert.ok(r.park.length<=4);
+ assert.ok(r.records.filter(x=>x.parkPath).length<=4);
+});
+test('2012 excludes 2013 Mercedes W212 facelift',()=>{
+ const r=recommendCatalog({country:'GB',year:2012,maxAI:250,maxPark:5,special:true});
+ assert.ok(r.ai.every(x=>!x.path.includes('EClass_W212_Facelift')));
+});
+test('suspicious .ovh embedded in texture folders is never recommended',()=>{
+ const r=recommendCatalog({country:'FR',year:2005,maxAI:250,maxPark:250,special:true,uncertain:true});
+ assert.ok(r.ai.every(x=>!x.suspicious));
+});
