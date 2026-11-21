@@ -92,3 +92,10 @@ test('custom CSV can replace a proxy and gives provenance warning',()=>{
  assert.equal(p.grade,'unverified');
  assert.throws(()=>parseFleetCSV('x;y\nx;y'),/fejléc/);
 });
+
+test('weighted fictional codes parse correctly when combined with UI checkbox array',()=>{
+ const r=generateRegistrations({scheme:'DE_NEW',year:2024,count:300,separator:'-',seed:'web-ui',areas:['B','AH:4','HER:2','WIN:1']});
+ const codes=new Set(r.occurrences.map(x=>x.code));
+ assert.deepEqual([...codes].sort(),['AH','B','HER','WIN']);
+ assert.ok(r.occurrences.find(x=>x.code==='AH').count>r.occurrences.find(x=>x.code==='B').count);
+});
