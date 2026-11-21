@@ -87,22 +87,22 @@ const SPECIAL=[
  {country:'CH',kind:'rail',from:1950,to:2004,title:'SBB P',source:'ch',format:q=>'P '+N(q.r,80000,99999)},
  {country:'CH',kind:'government',from:1950,to:2004,title:'Bundesverwaltung A',source:'ch',format:q=>'A '+N(q.r,10000,79999)},
  // 1958–1990 Hungary: the first two letters encode the actual vehicle/service category.
- {country:'HU',kind:'taxi',from:1958,to:1988,title:'Magyar szocialista taxi JA',source:'hu_historical',format:q=>'JA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'police',from:1958,to:1990,title:'Magyar rendőrség RA',source:'hu_historical',format:q=>'RA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'military',from:1958,to:1990,title:'Magyar honvédség HA',source:'hu_historical',format:q=>'HA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'border',from:1958,to:1990,title:'Magyar határőrség HR',source:'hu_historical',format:q=>'HR'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'ambulance',from:1958,to:1990,title:'Országos Mentőszolgálat MA',source:'hu_historical',format:q=>'MA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'fire',from:1958,to:1990,title:'Tűzoltóság TU',source:'hu_historical',format:q=>'TU'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'post',from:1958,to:1990,title:'Magyar Posta PA',source:'hu_historical',format:q=>'PA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'trailer',from:1958,to:1990,title:'Magyar utánfutók XS',source:'hu_historical',format:q=>'XS'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'motorcycle',from:1958,to:1990,title:'Magyar motorkerékpárok E/KA',source:'hu_historical',format:q=>(q.year<1976?'EA':'KA')+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'bus',from:1958,to:1990,title:'Magyar közforgalmú buszok GA',source:'hu_historical',format:q=>'GA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'truck',from:1958,to:1990,title:'Magyar közületi teherautók FA',source:'hu_historical',format:q=>'FA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'government',from:1958,to:1990,title:'Magyar állami szolgálati AB',source:'hu_historical',format:q=>'AB'+q.sep+P(q.r,2)+' '+P(q.r,2)},
- {country:'HU',kind:'diplomatic',from:1958,to:1990,title:'Magyar diplomáciai DT',source:'hu_historical',format:q=>'DT'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'taxi',from:1958,to:1988,schemes:['HU_PRE90'],title:'Magyar szocialista taxi JA',source:'hu_historical',format:q=>'JA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'police',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar rendőrség RA',source:'hu_historical',format:q=>'RA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'military',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar honvédség HA',source:'hu_historical',format:q=>'HA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'border',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar határőrség HR',source:'hu_historical',format:q=>'HR'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'ambulance',from:1958,to:1990,schemes:['HU_PRE90'],title:'Országos Mentőszolgálat MA',source:'hu_historical',format:q=>'MA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'fire',from:1958,to:1990,schemes:['HU_PRE90'],title:'Tűzoltóság TU',source:'hu_historical',format:q=>'TU'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'post',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar Posta PA',source:'hu_historical',format:q=>'PA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'trailer',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar utánfutók XS',source:'hu_historical',format:q=>'XS'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'motorcycle',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar motorkerékpárok E/KA',source:'hu_historical',format:q=>(q.year<1976?'EA':'KA')+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'bus',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar közforgalmú buszok GA',source:'hu_historical',format:q=>'GA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'truck',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar közületi teherautók FA',source:'hu_historical',format:q=>'FA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'government',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar állami szolgálati AB',source:'hu_historical',format:q=>'AB'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'diplomatic',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar diplomáciai DT',source:'hu_historical',format:q=>'DT'+q.sep+P(q.r,2)+' '+P(q.r,2)},
  // Hungarian identifiable service series
- {country:'HU',kind:'police',from:1990,to:2022,title:'Magyar rendőrségi RB',source:'hu',format:q=>'RB'+q.sep+P(q.r,4),note:'Valódi tartományok ennél szűkebbek; nem minden RB-szám bizonyítottan kiadott.'},
- {country:'HU',kind:'ambulance',from:2006,to:2022,title:'Magyar mentők MA',source:'hu',format:q=>'MA'+q.sep+P(q.r,4)},
+ {country:'HU',kind:'police',from:1990,to:2022,schemes:['HU_OLD'],title:'Magyar rendőrségi RB',source:'hu',format:q=>'RB'+q.sep+P(q.r,4),note:'Valódi tartományok ennél szűkebbek; nem minden RB-szám bizonyítottan kiadott.'},
+ {country:'HU',kind:'ambulance',from:2006,to:2022,schemes:['HU_OLD'],title:'Magyar mentők MA',source:'hu',format:q=>'MA'+q.sep+P(q.r,4)},
  // Croatian police blue letters, military HV
  {country:'HR',kind:'police',from:1992,to:2099,title:'Hrvatska policija (kék számok)',source:'hr',format:q=>P(q.r,3)+' '+P(q.r,3),note:'A rendszám színét az OMSI szövegállomány nem képes visszaadni.'},
  {country:'HR',kind:'military',from:1992,to:2099,title:'Hrvatska vojska HV',source:'hr',format:q=>'HV '+NUM(q.r,4)+q.sep+F(q.r,2)},
@@ -132,7 +132,7 @@ export function specialRulesFor(scheme,category,year,area='',options={}){
  if(!CATEGORY_IDS.has(category))throw Error('Ismeretlen járműkategória: '+category);
  if(category==='civil')return {kind:'ordinary',title:'Normál polgári rendszám',source:'',confidence:'regular'};
  const country=SCHEME_COUNTRY[scheme]||scheme.slice(0,2);
- const selected=SPECIAL.find(x=>x.country===country&&x.kind===category&&year>=x.from&&year<=x.to&&(!x.fromMonth||year>x.from||Number(options.month||6)>=x.fromMonth)&&(!x.toMonth||year<x.to||Number(options.month||6)<=x.toMonth)&&(!x.onlyArea||x.onlyArea.includes(area)));
+ const selected=SPECIAL.find(x=>x.country===country&&x.kind===category&&year>=x.from&&year<=x.to&&(!x.schemes||x.schemes.includes(options.scheme))&&(!x.fromMonth||year>x.from||Number(options.month||6)>=x.fromMonth)&&(!x.toMonth||year<x.to||Number(options.month||6)<=x.toMonth)&&(!x.onlyArea||x.onlyArea.includes(area)));
  if(selected)return {...selected,kind:'documented',confidence:selected.note?'partial':'documented'};
  if(ordinaryCategories.has(category)&&options.allowOrdinary){
   return {kind:'ordinary',title:'Hagyományos közúti rendszám: a '+category+' nem mindenütt külön alfanumerikus sorozat',source:'',confidence:'ordinary_unverified',
@@ -144,7 +144,7 @@ export function generateCategoryPlate({scheme,category,area,year,month=6,separat
  if(customPattern){
   return {plate:customPlate(customPattern,{area,year,separator},random),rule:{kind:'custom',title:'Felhasználói minta, nem ellenőrzött történeti rendszám',confidence:'fictional',source:''}};
  }
- const rule=specialRulesFor(scheme,category,year,area,{allowOrdinary,month});
+ const rule=specialRulesFor(scheme,category,year,area,{allowOrdinary,month,scheme});
  if(!rule)return null;
  return {plate:rule.format?rule.format({r:random,year,month,area,sep:separator}):defaultPlate(),rule};
 }
