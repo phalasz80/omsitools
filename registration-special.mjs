@@ -86,9 +86,9 @@ const SPECIAL=[
  {country:'AT',kind:'post',from:1967,to:1990,title:'Post- und Telegraphenverwaltung PT',source:'at',format:q=>'PT'+q.sep+N(q.r,100,99999),note:'A postai különkód megszűnésének pontos napja régiónként ellenőrzendő.'},
  // Swiss old federal/post and military
  {country:'CH',kind:'military',from:1950,to:2099,title:'Schweizer Armee M',source:'ch',format:q=>'M '+N(q.r,1,999999)},
- {country:'CH',kind:'post',from:1950,to:2004,title:'Schweizer PTT P',source:'ch',format:q=>'P '+N(q.r,10000,79999)},
- {country:'CH',kind:'rail',from:1950,to:2004,title:'SBB P',source:'ch',format:q=>'P '+N(q.r,80000,99999)},
- {country:'CH',kind:'government',from:1950,to:2004,title:'Bundesverwaltung A',source:'ch',format:q=>'A '+N(q.r,10000,79999)},
+ {country:'CH',kind:'post',from:1950,to:2004,visibleTo:'2004-12-31',title:'Schweizer PTT P',source:'ch',format:q=>'P '+N(q.r,10000,79999)},
+ {country:'CH',kind:'rail',from:1950,to:2004,visibleTo:'2004-12-31',title:'SBB P',source:'ch',format:q=>'P '+N(q.r,80000,99999)},
+ {country:'CH',kind:'government',from:1950,to:2004,visibleTo:'2004-12-31',title:'Bundesverwaltung A',source:'ch',format:q=>'A '+N(q.r,10000,79999)},
  // 1958–1990 Hungary: the first two letters encode the actual vehicle/service category.
  {country:'HU',kind:'taxi',from:1958,to:1988,schemes:['HU_PRE90'],title:'Magyar szocialista taxi JA',source:'hu_historical',format:q=>'JA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
  {country:'HU',kind:'police',from:1958,to:1990,schemes:['HU_PRE90'],title:'Magyar rendőrség RA',source:'hu_historical',format:q=>'RA'+q.sep+P(q.r,2)+' '+P(q.r,2)},

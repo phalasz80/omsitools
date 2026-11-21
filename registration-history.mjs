@@ -3,7 +3,7 @@
  * Date uncertainty remains explicit instead of pretending all series were issued.
  */
 export const PLATE_HISTORY=Object.freeze({
- HU_PRE90:{from:'1958-01-01',to:'1990-08-05',confidence:'published',source:'https://magyarjarmu.hu/tortenet/rendszamok/rendszamok-1958-1990/',continued:true,warning:'A magánrendszám sorozatainak évhez rendelése közelítő, a kiadott betűkészletek helyi és időbeli átfedései előfordulhattak.'},
+ HU_PRE90:{from:'1958-09-02',to:'1990-08-05',legalEnd:'1995-12-31',confidence:'published',source:'https://njt.jog.gov.hu/jogszabaly/1990-20-20-0A',continued:true,warning:'A magánrendszám sorozatainak évhez rendelése közelítő, a kiadott betűkészletek helyi és időbeli átfedései előfordulhattak.'},
  AT_PRE90:{from:'1947-01-01',to:'1990-12-31',confidence:'published',source:'https://de.wikipedia.org/wiki/Historische_Kfz-Kennzeichen_(%C3%96sterreich)',continued:true,warning:'Az 1947–1990-es osztrák tartományi rész-sorszámok alapján a belső járáskiosztás nem állítható vissza teljes bizonyossággal.'},
  RS_YUG:{from:'1960-01-01',to:'2010-12-31',confidence:'approximate',source:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Yugoslavia',continued:true,warning:'A jugoszláv, majd szerb rendszámok 1960–2010-es regionális variánsaihoz külön korszakos ellenőrzés szükséges.'},
  HR_YUG:{from:'1960-01-01',to:'1991-12-31',confidence:'approximate',source:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Yugoslavia',continued:true},

@@ -104,6 +104,15 @@ function categoryEntries(categories,schemes,interval,mode,ageYears,options){
      supported=arr.some(x=>specialRulesFor(s.id,c.kind,m.year,x.code,{allowOrdinary:true,month:m.month,scheme:s.id})!==null);
     }
     if(!supported)continue;
+    // Certain historical service plates were mandatorily replaced and cannot appear indefinitely.
+    if(mode!=='issue'&&!c.template){
+      const sceneTo=mode==='street_all'?interval.to:date(Math.floor(interval.toIdx/12),interval.toIdx%12+1);
+      const usable=arr.some(a=>{
+        const rule=specialRulesFor(s.id,c.kind,m.year,a.code,{month:m.month,scheme:s.id,allowOrdinary:!!options.allowOrdinary});
+        return rule&&(!rule.visibleTo||sceneTo<=rule.visibleTo);
+      });
+      if(!usable)continue;
+    }
     pool.push({...m,areas:arr,weight:m.weight});
    }
    customAreaCount+=arr.length;

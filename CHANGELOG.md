@@ -6,6 +6,7 @@
 - Forrásokhoz kötött speciális sorozatok (Bundeswehr, THW, NVA, Volkspolizei, Magyar Posta, OMSZ, rendőrség, stb.); nem dokumentált esetben automatikus betűkód helyett hiányjelzés.
 - Tételes történeti CSV, forráskritikai TXT, beállítások JSON, valamint tiszta registrations.txt ZIP- és önálló exporttal.
 - A nyári/őszi brit számjelölések, az 1974-es NDK és az 1990/2022-es magyar rendszerhatárok külön kezelése.
+- A magyar 1958–1990-es táblák kötelező cseréjének 1995. december 31-i határideje a 20/1990. (VIII. 6.) BM rendeletből; a régi svájci P/A-sorozatok későbbi fennmaradásának korlátozása.
 
 ## 1.4.0 (2026-11-21)
 - Önálló `registrations.txt` generáló oldal: 21 rendszer, 12 ország/történeti állam, 100 000 sorig, meghatározott seed, duplikátummentes generálás, kötőjel/szóköz.
