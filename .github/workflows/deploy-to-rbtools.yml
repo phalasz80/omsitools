@@ -61,7 +61,7 @@ jobs:
           set -euo pipefail
           mkdir -p rbtools/omsitools
           find rbtools/omsitools -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
-          cp omsi-src/index.html omsi-src/style.css omsi-src/app.mjs omsi-src/engine.mjs omsi-src/traffic.mjs omsi-src/geography.mjs omsi-src/calendar-sources.mjs omsi-src/README.md omsi-src/CHANGELOG.md omsi-src/example_overrides.csv rbtools/omsitools/
+          cp omsi-src/index.html omsi-src/style.css omsi-src/app.mjs omsi-src/engine.mjs omsi-src/traffic.mjs omsi-src/geography.mjs omsi-src/calendar-sources.mjs omsi-src/README.md omsi-src/CHANGELOG.md omsi-src/CATALOG_RESEARCH.md omsi-src/example_overrides.csv rbtools/omsitools/
           cd rbtools
           git config user.name "omsitools-deploy[bot]"
           git config user.email "omsitools-deploy@users.noreply.github.com"
