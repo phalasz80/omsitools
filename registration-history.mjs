@@ -37,7 +37,7 @@ export function plateDateRange(scheme){const a=PLATE_HISTORY[scheme];if(!a)throw
 export function activeOn(scheme,ymd){const v=plateDateRange(scheme),date=YYYYMMDD(ymd);return !!date&&date>=v.from&&(!v.to||date<=v.to);}
 export function legallyVisibleOn(scheme,issued,scene){const v=plateDateRange(scheme);return activeOn(scheme,issued)&&issued<=scene&&(!v.legalEnd||scene<=v.legalEnd)&&v.continued!==false;}
 export const UK_SUFFIX_RANGES=Object.freeze([
- ['A','1963-01-01','1963-12-31'],['B','1964-01-01','1964-12-31'],['C','1965-01-01','1965-12-31'],['D','1966-01-01','1966-12-31'],['E','1967-01-01','1967-07-31'],
+ ['A','1963-02-01','1963-12-31'],['B','1964-01-01','1964-12-31'],['C','1965-01-01','1965-12-31'],['D','1966-01-01','1966-12-31'],['E','1967-01-01','1967-07-31'],
  ...'FGHJKLMNPRSTVWXY'.split('').map((letter,index)=>{const year=1967+index;return [letter,year+'-08-01',(year+1)+'-07-31'];})
 ]);
 export const UK_PREFIX_RANGES=Object.freeze([

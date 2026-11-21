@@ -94,3 +94,17 @@ test('category proportions follow independently configurable weights',()=>{
  const civil=r.categories.find(x=>x.category==='civil').count, taxi=r.categories.find(x=>x.category==='taxi').count;
  assert.ok(civil>taxi*4&&taxi>0);
 });
+
+test('socialist Hungarian plates must be replaced by end of 1995',()=>{
+ const old=generateHistoricalRegistrations(basic('HU','HU_PRE90',1994,1994,[],{mode:'street_all',count:30,maxAge:20}));
+ assert.ok(old.schemes.every(x=>x.id==='HU_PRE90'));
+ assert.throws(()=>generateHistoricalRegistrations(basic('HU','HU_PRE90',1996,1996,[],{mode:'street_any',count:30,maxAge:20})),/nincs/i);
+});
+test('Swiss old agency series cannot remain after 2004 in street mode',()=>{
+ assert.throws(()=>generateHistoricalRegistrations(basic('CH','CH_NEW',2015,2015,['ZH'],{
+  mode:'street_any',count:10,maxAge:40,categories:{post:{enabled:true,weight:1}}
+ })),/nincs/i);
+});
+test('future Hungarian civilian first letter cannot be mistaken as already issued',()=>{
+ assert.throws(()=>generateHistoricalRegistrations(basic('HU','HU_NEW',2029,2029,[],{count:5})),/még nem|nem állapítható/i);
+});
