@@ -1,0 +1,135 @@
+/* Historical special categories for OMSI registration lists.
+ * Only documented formats are marked "documented"; fallback ordinary patterns are clearly flagged.
+ */
+export const VEHICLE_CATEGORIES=Object.freeze([
+ ['civil','Polgári személyautó'],
+ ['taxi','Taxi'],
+ ['police','Rendőrség / csendőrség'],
+ ['military','Katonaság'],
+ ['nva','NDK Nemzeti Néphadsereg (NVA)'],
+ ['border','Határőrség / határrendészet'],
+ ['ambulance','Mentőautó'],
+ ['fire','Tűzoltóság'],
+ ['rescue','Katasztrófavédelem / műszaki mentés'],
+ ['thw','THW (német műszaki segélyszervezet)'],
+ ['post','Posta / postaigazgatás'],
+ ['rail','Vasúttársasági szolgálati jármű'],
+ ['trailer','Pótkocsi / utánfutó'],
+ ['motorcycle','Motorkerékpár'],
+ ['bus','Autóbusz'],
+ ['truck','Tehergépkocsi'],
+ ['agricultural','Mezőgazdasági jármű'],
+ ['government','Állami / hatósági jármű'],
+ ['diplomatic','Diplomáciai'],
+ ['historic','Veterán / történeti jármű'],
+ ['temporary','Ideiglenes / próba'],
+ ['electric','Elektromos jármű']
+]);
+export const CATEGORIES_DEFAULT=Object.freeze({civil:100});
+export const SPECIAL_SOURCES=Object.freeze({
+ de:'https://de.wikipedia.org/wiki/Kfz-Kennzeichen_(Deutschland)',
+ de_codes:'https://de.wikipedia.org/wiki/Liste_aller_Kfz-Kennzeichen_der_Bundesrepublik_Deutschland',
+ dd:'https://de.wikipedia.org/wiki/Liste_der_Kfz-Kennzeichen_der_DDR_(1953%E2%80%931990)',
+ ch:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Switzerland',
+ at:'https://de.wikipedia.org/wiki/Historische_Kfz-Kennzeichen_(%C3%96sterreich)',
+ hu:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Hungary',
+ hr:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Croatia',
+ rs:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Serbia',
+ gb:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_the_United_Kingdom',
+ fr:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_France',
+ cz:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_the_Czech_Republic'
+});
+const A='ABCDEFGHJKLMNPRSTUVWXYZ';
+const F=(r,n,alphabet=A)=>Array.from({length:n},()=>alphabet[Math.floor(r()*alphabet.length)]).join('');
+const N=(r,min,max)=>String(min+Math.floor(r()*(max-min+1)));
+const P=(r,n)=>N(r,0,10**n-1).padStart(n,'0');
+const NUM=(r,n)=>N(r,10**(n-1),10**n-1);
+export function customPlate(pattern,{area='',separator='-',year=2020},random){
+ const fmt=String(pattern||'').toUpperCase();
+ if(!fmt||fmt.length>110)throw Error('Az egyéni rendszámminta 1–110 karakter hosszú lehet.');
+ let out=fmt.replace(/\{(AREA|SEP|YEAR|YY|[LN]{1,6})\}/g,(_,token)=>{
+  if(token==='AREA')return area;
+  if(token==='SEP')return separator;
+  if(token==='YEAR')return String(year);
+  if(token==='YY')return String(year%100).padStart(2,'0');
+  if(/^L+$/.test(token))return F(random,token.length);
+  if(/^N+$/.test(token))return NUM(random,token.length);
+  throw Error('Ismeretlen sablonelem: '+token);
+ });
+ if(/[{}]/.test(out)||!/^[A-Z0-9 -]{1,32}$/.test(out))throw Error('A sablon csak {AREA}, {SEP}, {L}, {LL}, {NNN}, {YEAR}, {YY} mezőket, szóközt, kötőjelet és betűket tartalmazhat.');
+ return out;
+}
+const SPECIAL=[
+ // Germany: regionless military or service prefix, official code dates
+ {country:'DE',kind:'military',from:1956,to:2099,title:'Bundeswehr Y',source:'de',format:(q)=>'Y'+q.sep+NUM(q.r,6)},
+ {country:'DE',kind:'thw',from:1996,to:2099,title:'THW',source:'de',format:(q)=>'THW'+q.sep+N(q.r,8000,89999)},
+ {country:'DE',kind:'post',from:1956,to:1994,title:'Deutsche Bundespost BP (1995 előtt)',source:'de_codes',format:q=>'BP'+q.sep+NUM(q.r,4)},
+ {country:'DE',kind:'rail',from:1956,to:1993,title:'Deutsche Bundesbahn DB',source:'de_codes',format:q=>'DB'+q.sep+NUM(q.r,4)},
+ {country:'DE',kind:'police',from:1956,to:2007,title:'Korábbi német hatósági rendszám (2007-ig)',source:'de',format:q=>q.area+q.sep+N(q.r,3000,7999),note:'Az egyes helyi hatósági számtartományok eltérhetnek, a rendőrséghez rendelt sorok nem mindenhol egységesek.'},
+ {country:'DE',kind:'rescue',from:1956,to:2007,title:'Korábbi német katasztrófavédelmi hatósági számkör',source:'de',format:q=>q.area+q.sep+N(q.r,8000,8999)},
+ {country:'DE',kind:'border',from:1956,to:2006,title:'Bundesgrenzschutz BG',source:'de_codes',format:q=>'BG'+q.sep+NUM(q.r,4)},
+ // DDR specialty independent from civilian district markers
+ {country:'DD',kind:'nva',from:1956,to:1975,title:'NVA VA korai számsor',source:'dd',format:q=>'VA '+N(q.r,1,9)+q.sep+P(q.r,4)},
+ {country:'DD',kind:'nva',from:1976,to:1990,title:'NVA VA késői számsor (1976-tól)',source:'dd',format:q=>'VA '+N(q.r,10,99)+q.sep+P(q.r,4)},
+ {country:'DD',kind:'military',from:1956,to:1975,title:'NVA VA korai számsor',source:'dd',format:q=>'VA '+N(q.r,1,9)+q.sep+P(q.r,4)},
+ {country:'DD',kind:'military',from:1976,to:1990,title:'NVA VA késői számsor',source:'dd',format:q=>'VA '+N(q.r,10,99)+q.sep+P(q.r,4)},
+ {country:'DD',kind:'police',from:1953,to:1990,title:'Volkspolizei VP körzeti sorozat',source:'dd',format:q=>'VP '+({I:'00',R:'12',S:'13',T:'14',D:'04',E:'05',Z:'06',H:'07',K:'08',L:'09',N:'10',O:'11',C:'03'}[q.area]||'00')+q.sep+P(q.r,4),note:'A területi kódok körzetenként változtak; egyes körzetekhez a történeti táblázat ellenőrzendő.'},
+ {country:'DD',kind:'border',from:1961,to:1990,title:'Grenztruppen GT',source:'dd',format:q=>(q.year===1990?'GS':'GT')+' '+NUM(q.r,2)+q.sep+P(q.r,4),note:'A GT–GS átállás 1990-ben nem január 1-jén történt; a pontos hónapot is vizsgálni kell.'},
+ // Austrian state fleet codes
+ {country:'AT',kind:'military',from:1967,to:2099,title:'Bundesheer BH',source:'at',format:q=>'BH'+q.sep+N(q.r,100,99999)},
+ {country:'AT',kind:'police',from:1967,to:2005,title:'Bundesgendarmerie BG',source:'at',format:q=>'BG'+q.sep+N(q.r,100,99999)},
+ {country:'AT',kind:'police',from:2005,to:2099,title:'Bundespolizei BP',source:'at',format:q=>'BP'+q.sep+N(q.r,100,99999)},
+ {country:'AT',kind:'post',from:1967,to:1990,title:'Post- und Telegraphenverwaltung PT',source:'at',format:q=>'PT'+q.sep+N(q.r,100,99999),note:'A postai különkód megszűnésének pontos napja régiónként ellenőrzendő.'},
+ // Swiss old federal/post and military
+ {country:'CH',kind:'military',from:1950,to:2099,title:'Schweizer Armee M',source:'ch',format:q=>'M '+N(q.r,1,999999)},
+ {country:'CH',kind:'post',from:1950,to:2004,title:'Schweizer PTT P',source:'ch',format:q=>'P '+N(q.r,10000,79999)},
+ {country:'CH',kind:'rail',from:1950,to:2004,title:'SBB P',source:'ch',format:q=>'P '+N(q.r,80000,99999)},
+ {country:'CH',kind:'government',from:1950,to:2004,title:'Bundesverwaltung A',source:'ch',format:q=>'A '+N(q.r,10000,79999)},
+ // Hungarian identifiable service series
+ {country:'HU',kind:'police',from:1990,to:2022,title:'Magyar rendőrségi RB',source:'hu',format:q=>'RB'+q.sep+P(q.r,4),note:'Valódi tartományok ennél szűkebbek; nem minden RB-szám bizonyítottan kiadott.'},
+ {country:'HU',kind:'ambulance',from:2006,to:2022,title:'Magyar mentők MA',source:'hu',format:q=>'MA'+q.sep+P(q.r,4)},
+ // Croatian police blue letters, military HV
+ {country:'HR',kind:'police',from:1992,to:2099,title:'Hrvatska policija (kék számok)',source:'hr',format:q=>P(q.r,3)+' '+P(q.r,3),note:'A rendszám színét az OMSI szövegállomány nem képes visszaadni.'},
+ {country:'HR',kind:'military',from:1992,to:2099,title:'Hrvatska vojska HV',source:'hr',format:q=>'HV '+NUM(q.r,4)+q.sep+F(q.r,2)},
+ // Serbia: specialised taxi, trailer, military, police (ASCII only)
+ {country:'RS',kind:'taxi',from:2011,to:2099,title:'Szerb TX taxi',source:'rs',format:q=>q.area+' '+NUM(q.r,5)+q.sep+'TX'},
+ {country:'RS',kind:'trailer',from:2011,to:2099,title:'Szerb fordított pótkocsi',source:'rs',format:q=>F(q.r,2)+q.sep+NUM(q.r,4)+' '+q.area},
+ {country:'RS',kind:'military',from:2011,to:2099,title:'Szerb hadsereg',source:'rs',format:q=>F(q.r,1)+' '+NUM(q.r,4)},
+ {country:'RS',kind:'police',from:2011,to:2099,title:'Szerb rendőrség (ASCII P helyettesítéssel)',source:'rs',format:q=>'P '+P(q.r,6),note:'A valódi táblán cirill П szerepel, amit ez az ASCII-s OMSI-kimenet P betűvel csak közelít.'},
+ // France pre-2009 official police and gendarmerie service plates
+ {country:'FR',kind:'police',from:1950,to:2009,title:'Police nationale FNI állami',source:'fr',format:q=>q.area+'N'+q.sep+NUM(q.r,4)+F(q.r,1)},
+ {country:'FR',kind:'military',from:1950,to:2009,title:'Armée de Terre FNI katonai',source:'fr',format:q=>'6'+String(q.year%100).padStart(2,'0')+'1 '+P(q.r,4)},
+ {country:'FR',kind:'fire',from:1950,to:2009,title:'Paris SPVL (párizsi tűzoltóság)',source:'fr',format:q=>'SPVL '+NUM(q.r,4),note:'Csak a párizsi tűzoltóságra jellemző sorozat; más francia városokhoz ne használd automatikusan.',onlyArea:['75']},
+ // British forces (not standard civilian)
+ {country:'GB',kind:'military',from:1949,to:1994,title:'Brit hadsereg 00 AB 00',source:'gb',format:q=>P(q.r,2)+' '+F(q.r,2)+' '+P(q.r,2)},
+ {country:'GB',kind:'military',from:1995,to:2099,title:'Brit hadsereg AB 00 CD',source:'gb',format:q=>F(q.r,2)+' '+P(q.r,2)+' '+F(q.r,2)}
+];
+export const SPECIAL_RULES=Object.freeze(SPECIAL);
+const CATEGORY_IDS=new Set(VEHICLE_CATEGORIES.map(x=>x[0]));
+const SCHEME_COUNTRY={
+ HU_OLD:'HU',HU_NEW:'HU',HU_PRE90:'HU',CS_OLD:'CS',CZ_OLD:'CZ',CZ_NEW:'CZ',SK_OLD:'SK',SK_NEW:'SK',AT_NEW:'AT',AT_PRE90:'AT',CH_NEW:'CH',
+ DE_NEW:'DE',DE_FRG:'DE',DE_WB:'DE',DE_GDR_OLD:'DD',DE_GDR_NEW:'DD',
+ FR_FNI:'FR',FR_SIV:'FR',UK_SUFFIX:'GB',UK_PREFIX:'GB',UK_CURRENT:'GB',UK_DATELESS:'GB',
+ RS_NEW:'RS',RS_YUG:'RS',HR_NEW:'HR',HR_YUG:'HR'
+};
+const ordinaryCategories=new Set(['taxi','ambulance','fire','rescue','motorcycle','trailer','bus','truck','agricultural','historic','temporary','electric','police','government','post']);
+export function specialRulesFor(scheme,category,year,area='',options={}){
+ if(!CATEGORY_IDS.has(category))throw Error('Ismeretlen járműkategória: '+category);
+ if(category==='civil')return {kind:'ordinary',title:'Normál polgári rendszám',source:'',confidence:'regular'};
+ const country=SCHEME_COUNTRY[scheme]||scheme.slice(0,2);
+ const selected=SPECIAL.find(x=>x.country===country&&x.kind===category&&year>=x.from&&year<=x.to&&(!x.onlyArea||x.onlyArea.includes(area)));
+ if(selected)return {...selected,kind:'documented',confidence:selected.note?'partial':'documented'};
+ if(ordinaryCategories.has(category)&&options.allowOrdinary){
+  return {kind:'ordinary',title:'Hagyományos közúti rendszám: a '+category+' nem mindenütt külön alfanumerikus sorozat',source:'',confidence:'ordinary_unverified',
+   note:'A rendszám karakterei normál személygépjármű-azonosítónak felelnek meg. A különleges jármű jellege önmagában nem következik a rendszámból.'};
+ }
+ return null;
+}
+export function generateCategoryPlate({scheme,category,area,year,separator,random,defaultPlate,customPattern,allowOrdinary=false}){
+ if(customPattern){
+  return {plate:customPlate(customPattern,{area,year,separator},random),rule:{kind:'custom',title:'Felhasználói minta, nem ellenőrzött történeti rendszám',confidence:'fictional',source:''}};
+ }
+ const rule=specialRulesFor(scheme,category,year,area,{allowOrdinary});
+ if(!rule)return null;
+ return {plate:rule.format?rule.format({r:random,year,area,sep:separator}):defaultPlate(),rule};
+}
