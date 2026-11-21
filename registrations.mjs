@@ -1,3 +1,4 @@
+import {britishAgeLetter,ukNumericAge} from './registration-history.mjs';
 /* Synthetic registrations for OMSI only. No database verification, no real plate allocation claims. */
 export const PLATE_SYSTEMS=Object.freeze([
  {id:'HU_OLD',country:'HU',title:'Magyarország · ABC-123 (1990–2022)',start:1990,end:2022,example:'ABC-123'},
@@ -69,7 +70,7 @@ function normalizeAreas(values,system){
 }
 function pickArea(r,a){const total=a.reduce((s,x)=>s+x.weight,0);let t=r()*total;for(const x of a){t-=x.weight;if(t<0)return x.code;}return a.at(-1).code;}
 function ageCode(year,secondHalf=false){const n=year%100;return String((n+(secondHalf?50:0))%100).padStart(2,'0');}
-function registration(system,area,r,sep,year,half){
+function registration(system,area,r,sep,year,half,month){
  const d=n=>digits(r,n),l=n=>letters(r,n),a=area;
  switch(system){
  case 'HU_OLD':return l(3)+sep+d(3);
@@ -91,10 +92,10 @@ function registration(system,area,r,sep,year,half){
  case 'DE_GDR_OLD':return a+l(1)+' '+d(2)+sep+d(2);
  case 'DE_GDR_NEW':return a+l(2)+' '+d(1)+sep+d(2);
  case 'FR_FNI':return number(r,9999)+' '+l(2)+' '+a;
- case 'FR_SIV':return l(2)+sep+d(3)+sep+l(2);
- case 'UK_SUFFIX':return l(3)+' '+number(r,999)+l(1);
- case 'UK_PREFIX':return l(1)+number(r,999)+' '+l(3);
- case 'UK_CURRENT':return a+ageCode(year,half)+' '+l(3);
+ case 'FR_SIV':return letters(r,2,'ABCDEFGHJKLMNPRSTVWXYZ')+sep+d(3)+sep+letters(r,2,'ABCDEFGHJKLMNPRSTVWXYZ');
+ case 'UK_SUFFIX':return l(3)+' '+number(r,999)+britishAgeLetter('suffix',year,month);
+ case 'UK_PREFIX':return britishAgeLetter('prefix',year,month)+number(r,999)+' '+l(3);
+ case 'UK_CURRENT':return a+ukNumericAge(year,month)+' '+l(3);
  case 'RS_NEW':return a+' '+d(3)+sep+l(2);
  case 'HR_NEW':return a+' '+d(4)+sep+l(2);
  default:throw Error('Nem támogatott rendszámrendszer: '+system);
@@ -103,12 +104,13 @@ function registration(system,area,r,sep,year,half){
 export function generateRegistrations(opts={}){
  const scheme=PLATE_SYSTEMS.find(x=>x.id===opts.scheme);
  if(!scheme)throw Error('Válassz rendszámrendszert.');
- const count=Number(opts.count||1000),year=Number(opts.year||2020),sep=opts.separator===' '? ' ':opts.separator==='-'?'-':null;
+ const count=Number(opts.count||1000),year=Number(opts.year||2020),month=opts.month===undefined?(opts.secondHalf?9:(year===2001&&opts.scheme==='UK_CURRENT'?9:year===1983&&opts.scheme==='UK_PREFIX'?9:year===2022&&opts.scheme==='HU_NEW'?7:year===1997&&opts.scheme==='SK_OLD'?4:3)):Number(opts.month),sep=opts.separator===' '? ' ':opts.separator==='-'?'-':null;
  if(!Number.isInteger(count)||count<1||count>100000)throw Error('A fájl 1–100 000 sort tartalmazhat.');
  if(!Number.isInteger(year)||year<scheme.start||year>scheme.end)throw Error('Az év nem illik a kiválasztott rendszerhez ('+scheme.start+'–'+scheme.end+').');
  if(!sep)throw Error('Válassz kötőjelet vagy szóközt elválasztónak.');
+ if(!Number.isInteger(month)||month<1||month>12)throw Error('A hónap 1 és 12 közötti egész legyen.');
  const areas=normalizeAreas(opts.areas,scheme);
- const r=rng(seedFrom(String(opts.seed??'OMSI')+'|'+scheme.id+'|'+year+'|'+areas.map(x=>x.code+':'+x.weight).join(',')));
+ const r=rng(seedFrom(String(opts.seed??'OMSI')+'|'+scheme.id+'|'+year+'|'+month+'|'+areas.map(x=>x.code+':'+x.weight).join(',')));
  const unique=new Set(),rows=[],occurrences=new Map(),notes=[];
  const permitted=system=>system.startsWith('DE_GDR')?'NDK':system==='DE_WB'?'Nyugat-Berlin':null;
  if(permitted(scheme.id))notes.push('A történeti NDK/NSZK-kombinációk regionális betűállománya egyszerűsített; nem minden sor igazolt történeti kiosztás.');
@@ -119,12 +121,12 @@ export function generateRegistrations(opts={}){
  const cap=Math.max(1000,count*30);
  for(let i=0,attempt=0;i<count;attempt++){
   if(attempt>cap)throw Error('A megadott terület és sorozat nem ad elegendő egyedi rendszámot. Csökkentsd a darabszámot vagy adj meg több területet.');
-  const area=pickArea(r,areas),plate=registration(scheme.id,area,r,sep,year,Boolean(opts.secondHalf));
+  const area=pickArea(r,areas),plate=registration(scheme.id,area,r,sep,year,Boolean(opts.secondHalf),month);
   if(unique.has(plate))continue;
   unique.add(plate);rows.push(plate);occurrences.set(area,(occurrences.get(area)||0)+1);i++;
  }
  return {text:rows.join('\r\n')+'\r\n',rows,scheme,year,areas,occurrences:[...occurrences].map(([code,count])=>({code,count})),
-  count,notes,bytes:rows.reduce((n,p)=>n+p.length+2,0)};
+  count,month,notes,bytes:rows.reduce((n,p)=>n+p.length+2,0)};
 }
 export function summarizeReferenceBerlin(text){
  const rows=String(text||'').replace(/\r/g,'').split('\n').map(s=>s.trim()).filter(Boolean);
