@@ -2,7 +2,7 @@
  * Issuance and on-road appearance are separate modes.
  * Rows are synthetic and individually unique; metadata never put into registrations.txt.
  */
-import {PLATE_SYSTEMS,historicalPlateRng,historicalPlateVariant,historicalPlateAreas} from './registrations.mjs';
+import {PLATE_SYSTEMS,AREA_OPTIONS,FICTIONAL_AREAS,historicalPlateRng,historicalPlateVariant,historicalPlateAreas} from './registrations.mjs';
 import {plateDateRange,activeOn,legallyVisibleOn} from './registration-history.mjs';
 import {VEHICLE_CATEGORIES,specialRulesFor,generateCategoryPlate} from './registration-special.mjs';
 
@@ -60,7 +60,14 @@ export function availablePeriodSystems(country){
  return PLATE_SYSTEMS.filter(s=>s.country===country).map(s=>({...s,history:plateDateRange(s.id)}));
 }
 function checkSchemeAreaForPeriod(id,raw){
- try{return historicalPlateAreas(raw,id);}
+ try{
+  const normalized=historicalPlateAreas(raw,id);
+  // Distinct regional schemes must never borrow a different country's recognised prefixes.
+  // Unregistered codes are allowed only as explicitly user-supplied fictional OMSI areas.
+  if(id==='UK_NI')return normalized.filter(x=>(AREA_OPTIONS.UK_NI||[]).some(a=>a[0]===x.code));
+  if(id==='DE_WB')return normalized.filter(x=>x.code==='B');
+  return normalized;
+ }
  catch{return null;}
 }
 function poolForScheme(s,mode,interval,ageYears){
@@ -73,11 +80,12 @@ function poolForScheme(s,mode,interval,ageYears){
     .filter(m=>activeOn(s.id,date(m.year,m.month))).map(m=>({...m,scheme:s.id,weight:1}));
  }
  const sceneIdx=mode==='street_all'?interval.fromIdx:interval.toIdx;
+ const endOfStreet=mode==='street_all'?interval.to:date(Math.floor(sceneIdx/12),sceneIdx%12+1);
  const minimum=Math.max(Number(h.from.slice(0,4))*12+Number(h.from.slice(5,7))-1,sceneIdx-ageYears*12);
  const maximum=Math.min(sceneIdx,h.to?Number(h.to.slice(0,4))*12+Number(h.to.slice(5,7))-1:sceneIdx);
  if(maximum<minimum)return [];
  return monthsBetween(Math.floor(minimum/12),minimum%12+1,Math.floor(maximum/12),maximum%12+1)
-  .filter(m=>activeOn(s.id,date(m.year,m.month))&&legallyVisibleOn(s.id,date(m.year,m.month),date(Math.floor(sceneIdx/12),sceneIdx%12+1)))
+  .filter(m=>activeOn(s.id,date(m.year,m.month))&&legallyVisibleOn(s.id,date(m.year,m.month),endOfStreet))
   .map(m=>({...m,scheme:s.id,weight:Math.max(0.04,Math.exp(-(sceneIdx-m.idx)/(12*13)))}));
 }
 function categoryEntries(categories,schemes,interval,mode,ageYears,options){

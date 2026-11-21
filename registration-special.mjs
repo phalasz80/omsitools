@@ -146,5 +146,5 @@ export function generateCategoryPlate({scheme,category,area,year,month=6,separat
  }
  const rule=specialRulesFor(scheme,category,year,area,{allowOrdinary,month,scheme});
  if(!rule)return null;
- return {plate:rule.format?rule.format({r:random,year,month,area,sep:separator}):defaultPlate(),rule};
+ return {plate:rule.format?rule.format({r:random,year,month,area,sep:separator}):defaultPlate(),rule:{...rule,source:SPECIAL_SOURCES[rule.source]||rule.source||''}};
 }
