@@ -185,6 +185,10 @@ function classify(path){
  const plateType=(plate[2]||'').toLowerCase();
  const lod=/_lod\./i.test(last);
  const special=/(?:_active|_alert|_lights|_code3|_blitzer|_polizei|_police|_kripo|_rtw|_ambulanz|_feuerwehr|_taxi)(?:[_.]|$)/i.test(last);
+ if(identified&&/wartburg[_ -]?353[_ -]?85/i.test(context))identified={...identified,start:1985,label:'Wartburg 353 (1985-ös változat)'};
+ if(identified&&/eclass[_ -]?w212[_ -]?facelift/i.test(context))identified={...identified,start:2013};
+ if(identified&&/focus[_ -]?mk1[_ -]?facelift/i.test(context))identified={...identified,start:2001};
+ if(identified&&/vw[_ -]?t5[_ -]?facelift/i.test(context))identified={...identified,start:2009};
  const basename=(isS3D?folder:stem).replace(/^TH_|^TA_|^KI_/i,'');
  const normKey=basename.toLowerCase().replace(/[^a-z0-9]/g,'');
  const pathKey=isS3D?'s3d:'+String(folder).toLowerCase():root.toLowerCase()+':'+String(folder).toLowerCase()+':'+normKey;
@@ -252,7 +256,7 @@ function regionScore(x,opts){
  if(x.emergency&&!opts.special)n-=500;
  if(['truck','taxi','luxury'].includes(x.kind)&&!opts.special)n-=50;
  if(x.special&&!opts.special)n-=80;
- if(x.suspicious)n-=60;
+ if(x.suspicious)n-=500; // misplaced .ovh inside texture directory, model identity conflicts
  if(opts.area==='residential'&&x.kind==='truck')n-=30;
  if(opts.area==='industrial'&&x.kind==='truck')n+=25;
  if(opts.area==='center'&&x.kind==='van')n+=8;
@@ -303,6 +307,7 @@ export function recommendCatalog(options={}){
  const p=rawPark.filter(eligible).map(x=>({...x,score:scoreCatalog(x,{...opts,year})})).filter(x=>x.score>0).sort(compare);
  const selectedPark=[],selectedParkPaths=new Set();
  for(const a of preferred){
+  if(selectedPark.length>=maxPark)break;
   const paired=pairPark(a,p,opts);
   if(paired&&!selectedParkPaths.has(paired.path)){selectedPark.push(paired);selectedParkPaths.add(paired.path);}
  }
