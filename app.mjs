@@ -306,8 +306,12 @@ function populateRegAreas(){
    item.append(input,document.createTextNode(code+' · '+label));list.append(item);
   }
   if(['DE_NEW','DE_FRG','DE_WB'].includes(scheme.id)){
-   const title=el('p',{class:'fine'},'Fiktív OMSI-kódok: AH = Ahlheim, TH = Thüringer Wald, HER = Herrenhofen, WIN = Winsenburg. Ezeket alább szabadon megadhatod.');
-   list.append(title);
+   list.append(el('p',{class:'fine'},'Fiktív OMSI-kódok (csak szimulációhoz):'));
+   for(const [code,location] of FICTIONAL_AREAS){
+    const item=el('label',{class:'area-check'}),input=el('input',{type:'checkbox'});
+    input.className='area-check-input';input.dataset.code=code;
+    item.append(input,document.createTextNode(code+' · '+location+' [fiktív]'));list.append(item);
+   }
   }
  }
  $('regYear').min=String(scheme.start);$('regYear').max=String(scheme.end);
@@ -352,8 +356,11 @@ function currentFleetProfile(){
 function viewFleetProfile(p){
  const root=$('mixTable');root.replaceChildren();
  const subtitle=p.place+' · '+p.year+' · '+p.kind+' · '+p.grade;
- const info=el('div',{class:'source-row'}),a=el('a',{href:p.source||'#',target:'_blank',rel:'noopener noreferrer'},p.source||'Nincs megadott forrás');
- info.append(el('strong',{},subtitle),a,el('p',{class:'fine'},p.note));
+ const info=el('div',{class:'source-row'});
+ info.append(el('strong',{},subtitle));
+ if(/^https?:\/\//i.test(p.source||''))info.append(el('a',{href:p.source,target:'_blank',rel:'noopener noreferrer'},p.source));
+ else info.append(el('span',{class:'fine'},'Nincs megadott nyilvános forrás.'));
+ info.append(el('p',{class:'fine'},p.note));
  $('mixProvenance').textContent='Adatforrás: '+subtitle+'. '+p.note;
  root.append(info);
  const rows=fleetShares(p);
@@ -381,6 +388,10 @@ $('mixApply').addEventListener('click',()=>{
   const sourceRecords=vehicles.length?vehicles:recommendCatalog({
    country:projectData.country,region:projectData.region,year:projectData.start,eastWest:projectData.area.toLowerCase().includes('ost')?'east':projectData.area.toLowerCase().includes('west')?'west':'auto',maxAI:35,maxPark:30
   }).records;
+  const correctCity=p.id==='munich81'&&/münchen|munich/i.test(projectData.place);
+  const exactYear=p.year===projectData.start&&p.year===projectData.end;
+  const sameArea=(p.id==='uploaded')||(correctCity&&exactYear);
+  if(!sameArea&&!$('mixProxyConfirm').checked)throw Error('A kiválasztott adatsor nem pontosan ennek a helynek és időszaknak az állománya. Jelöld be a más területű/évű adatok közelítő használatának engedélyezését.');
   const result=applyFleetProfile(sourceRecords,p,{unknownPolicy:val('mixUnknown')});
   vehicles=result.records.map((r,i)=>({...r,_id:r._id||'mix-'+Date.now()+'-'+i}));
   renderVehicles();

@@ -52,10 +52,10 @@
 
 <section id="fleetratios" class="section" aria-label="Valós járműarányok és forráskutatás"><div class="layout">
 <div class="panel"><h2>Történeti járműarányok: adatok és becslések külön</h2>
-<p class="lead">Valós statisztikai adatból számolt márkasúlyok az AI-forgalomhoz. A forrás alapján azonosítható az év, terület és adatfajta. **A nyilvántartott autók aránya nem azonos a mozgó közúti forgalom arányával.**</p>
+<p class="lead">Valós statisztikai adatból számolt márkasúlyok az AI-forgalomhoz. A forrás alapján azonosítható az év, terület és adatfajta. <strong>A nyilvántartott autók aránya nem azonos a mozgó közúti forgalom arányával.</strong></p>
 <div class="field-grid">
  <div class="field full"><span>Adatforrás / statisztikai profil</span><select id="mixProfile"></select></div>
- <div class="field full"><span>Hiányzó márkák kezelése</span><select id="mixUnknown"><option value="keep">Meglévő súlyukat megtartani</option><option value="drop">Súlyozáskor nem besorolt AI-kat kihagyni</option></select></div>
+ <div class="field full"><label class="check"><input id="mixProxyConfirm" type="checkbox"> Engedélyezem, hogy más település vagy más év adatait kizárólag becslési segédletként alkalmazzuk</label></div><div class="field full"><span>Hiányzó márkák kezelése</span><select id="mixUnknown"><option value="keep">Meglévő súlyukat megtartani</option><option value="drop">Súlyozáskor nem besorolt AI-kat kihagyni</option></select></div>
  <div class="field full"><span>Saját, ellenőrzött márkastatisztika importja (CSV)</span><input id="mixCSV" type="file" accept=".csv,text/csv"></div>
  <div class="field"><span>Saját adatsor helye / címe</span><input id="mixPlace" type="text" placeholder="Pl. Berlin (West)"></div>
  <div class="field"><span>Az adatsor éve</span><input id="mixYear" type="number" min="1900" max="2099" value="1986"></div>

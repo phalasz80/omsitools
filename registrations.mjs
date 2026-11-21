@@ -36,7 +36,7 @@ export const AREA_OPTIONS=Object.freeze({
  DE_GDR_NEW:[['I','Berlin'],['R','Dresden'],['S','Leipzig'],['T','Karl-Marx-Stadt'],['D','Potsdam'],['E','Frankfurt (Oder)'],['Z','Cottbus'],['L','Erfurt'],['N','Gera'],['O','Suhl'],['C','Neubrandenburg'],['H','Magdeburg'],['K','Halle']],
  FR_FNI:[['75','Paris'],['92','Hauts-de-Seine'],['93','Seine-Saint-Denis'],['94','Val-de-Marne'],['69','Rhône'],['13','Bouches-du-Rhône'],['59','Nord'],['67','Bas-Rhin'],['33','Gironde'],['06','Alpes-Maritimes'],['2A','Corse-du-Sud'],['2B','Haute-Corse']],
  UK_CURRENT:[['LA','London'],['LB','London'],['MA','Manchester'],['BA','Birmingham'],['CA','Cardiff'],['SA','Glasgow / Scotland region, verify'],['YA','Leeds / Yorkshire region']],
- RS_NEW:[['BG','Beograd'],['NS','Novi Sad'],['NI','Niš'],['KG','Kragujevac'],['SU','Subotica'],['PA','Pančevo'],['ČA','Čačak (OMSI transliteration needed)']],
+ RS_NEW:[['BG','Beograd'],['NS','Novi Sad'],['NI','Niš'],['KG','Kragujevac'],['SU','Subotica'],['PA','Pančevo'],['CA','Čačak (ASCII-átírás, nem hivatalos formátum)']],
  HR_NEW:[['ZG','Zagreb'],['ST','Split'],['RI','Rijeka'],['OS','Osijek'],['PU','Pula'],['ZD','Zadar'],['DU','Dubrovnik'],['KA','Karlovac']]
 });
 export const FICTIONAL_AREAS=Object.freeze([['AH','Ahlheim'],['TH','Thüringer Wald'],['HER','Herrenhofen'],['WIN','Winsenburg']]);
