@@ -39,7 +39,9 @@ export const SPECIAL_SOURCES=Object.freeze({
  rs:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Serbia',
  gb:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_the_United_Kingdom',
  fr:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_France',
- cz:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_the_Czech_Republic'
+ cz:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_the_Czech_Republic',
+ sk:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Slovakia',
+ de_official:'https://www.bmv.de/SharedDocs/DE/Artikel/StV/Strassenverkehr/ueberblick-ueber-die-kraftfahrzeugkennzeichen'
 });
 const A='ABCDEFGHJKLMNPRSTUVWXYZ';
 const F=(r,n,alphabet=A)=>Array.from({length:n},()=>alphabet[Math.floor(r()*alphabet.length)]).join('');
@@ -130,6 +132,30 @@ const SPECIAL=[
  {country:'FR',kind:'police',from:1950,to:2009,title:'Police nationale FNI állami',source:'fr',format:q=>q.area+'N'+q.sep+NUM(q.r,4)+F(q.r,1)},
  {country:'FR',kind:'military',from:1950,to:2009,title:'Armée de Terre FNI katonai',source:'fr',format:q=>'6'+String(q.year%100).padStart(2,'0')+'1 '+P(q.r,4)},
  {country:'FR',kind:'fire',from:1950,to:2009,title:'Paris SPVL (párizsi tűzoltóság)',source:'fr',format:q=>'SPVL '+NUM(q.r,4),note:'Csak a párizsi tűzoltóságra jellemző sorozat; más francia városokhoz ne használd automatikusan.',onlyArea:['75']},
+ // Czech, Slovak and former Czechoslovak special formats. Colour changes are not encoded as text.
+ {country:'CS',kind:'military',from:1960,to:1992,title:'Csehszlovák katonai számsor (számok)',source:'cz',format:q=>NUM(q.r,3)+q.sep+NUM(q.r,3),note:'Az egykori csehszlovák katonai sorozatok országos és időbeli részletei csak részben rekonstruáltak.'},
+ {country:'CZ',kind:'military',from:1993,to:2099,title:'Cseh katonai rendszám (számok)',source:'cz',format:q=>NUM(q.r,3)+q.sep+NUM(q.r,3)},
+ {country:'CZ',kind:'trailer',from:1993,to:2001,title:'Cseh régi fordított pótkocsi',source:'cz',format:q=>NUM(q.r,2)+' '+q.area+q.sep+NUM(q.r,2)},
+ {country:'CZ',kind:'motorcycle',from:2001,to:2099,title:'Cseh motorkerékpár régiójel',source:'cz',format:q=>'1'+q.area+' '+NUM(q.r,4),note:'A valódi motorkerékpár rendszámtábla két soros, amit a TXT nem reprezentál.'},
+ {country:'CZ',kind:'historic',from:2001,to:2099,title:'Cseh V veteránjel',source:'cz',format:q=>'V'+q.area+' '+NUM(q.r,4),note:'A valódi táblán zöld színű karakterek, illetve korabeli területi alváltozatok vannak.'},
+ {country:'SK',kind:'military',from:1997,to:2099,title:'Szlovák katonai számok',source:'sk',format:q=>NUM(q.r,2)+q.sep+NUM(q.r,5)},
+ {country:'SK',kind:'temporary',from:1997,to:2022,title:'Szlovák korábbi V ideiglenes',source:'sk',format:q=>q.area+q.sep+'V'+NUM(q.r,3)},
+ {country:'SK',kind:'diplomatic',from:1997,to:2024,title:'Szlovák korábbi EE/ZZ diplomáciai',source:'sk',format:q=>'EE'+q.sep+NUM(q.r,5),note:'Korábbi szlovák kék hátterű diplomáciai sorozat. A szín hiányzik az OMSI TXT-ből.'},
+ {country:'SK',kind:'diplomatic',from:2025,to:2099,title:'Szlovák CD diplomáciai 2025-től',source:'sk',format:q=>'CD'+q.sep+NUM(q.r,5)},
+ {country:'SK',kind:'electric',from:2023,to:2099,title:'Szlovák EL/EV elektromos',source:'sk',format:q=>'EL'+q.sep+NUM(q.r,3)+F(q.r,2)},
+ // Austrian public service subsets normally use standard district plates with reserved ending pairs.
+ {country:'AT',kind:'taxi',from:1990,to:2099,title:'Wiener Taxi TX',source:'at',onlyArea:['W'],format:q=>'W'+q.sep+NUM(q.r,4)+' TX'},
+ {country:'AT',kind:'fire',from:1990,to:2099,title:'Wiener Feuerwehr FW',source:'at',onlyArea:['W'],format:q=>'W'+q.sep+NUM(q.r,4)+' FW'},
+ {country:'AT',kind:'ambulance',from:1990,to:2099,title:'Wiener Rettungsdienst RD',source:'at',onlyArea:['W'],format:q=>'W'+q.sep+NUM(q.r,4)+' RD'},
+ {country:'AT',kind:'bus',from:1990,to:2099,title:'Wiener Linienomnibus LO',source:'at',onlyArea:['W'],format:q=>'W'+q.sep+NUM(q.r,4)+' LO'},
+ {country:'AT',kind:'rail',from:1990,to:2099,title:'ÖBB W–BB',source:'at',onlyArea:['W'],format:q=>'W'+q.sep+NUM(q.r,4)+' BB'},
+ // Official German H/E suffix codes; year boundaries independently researched.
+ {country:'DE',kind:'historic',from:1997,fromMonth:7,to:2099,title:'Német H veterán (1997 júliusától)',source:'de_official',format:q=>q.area+q.sep+F(q.r,2)+' '+NUM(q.r,3)+'H'},
+ {country:'DE',kind:'electric',from:2015,to:2099,title:'Német E elektromos',source:'de_official',format:q=>q.area+q.sep+F(q.r,2)+' '+NUM(q.r,3)+'E'},
+ // DDR motorbikes retained the two-letter format after October 1974.
+ {country:'DD',kind:'motorcycle',from:1953,to:1990,title:'NDK motorkerékpár kétbetűs rendszám',source:'dd',format:q=>q.area+F(q.r,1)+' '+NUM(q.r,2)+q.sep+NUM(q.r,2),note:'Az NDK motorkerékpároknál tovább használt kétbetűs sorozat területi második betűje helyi levéltári ellenőrzést igényel.'},
+ // Yugoslav formats for historic Serbia/Croatia are explicitly treated as old regional markings only;
+ // do not invent distinctive emergency prefixes when those entities used civilian registration numbers.
  // British forces (not standard civilian)
  {country:'GB',kind:'military',from:1949,to:1994,title:'Brit hadsereg 00 AB 00',source:'gb',format:q=>P(q.r,2)+' '+F(q.r,2)+' '+P(q.r,2)},
  {country:'GB',kind:'military',from:1995,to:2099,title:'Brit hadsereg AB 00 CD',source:'gb',format:q=>F(q.r,2)+' '+P(q.r,2)+' '+F(q.r,2)}
