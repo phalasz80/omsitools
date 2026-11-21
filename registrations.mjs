@@ -1,4 +1,5 @@
 import {britishAgeLetter,ukNumericAge} from './registration-history.mjs';
+import {hungarianOldCivil,hungarianNewCivil} from './registration-series.mjs';
 /* Synthetic registrations for OMSI only. No database verification, no real plate allocation claims. */
 export const PLATE_SYSTEMS=Object.freeze([
  {id:'HU_PRE90',country:'HU',title:'Magyarország · 1958–1990 (AB-12-34)',start:1958,end:1990,example:'CA-12-34'},
@@ -112,7 +113,7 @@ function registration(system,area,r,sep,year,half,month){
  case 'HU_PRE90':return huPrivatePlate(r,sep,year);
  case 'HU_OLD':return l(3)+sep+d(3);
  case 'HU_NEW':return letters(r,2,pick(r,[VOWELS,CONS]))+sep+l(2)+' '+d(3);
- case 'CS_OLD':return a+' '+d(2)+sep+d(2);
+ case 'CS_OLD':return a+(year<1984?sep:' ')+d(2)+sep+d(2);
  case 'CZ_OLD':return a+l(1)+' '+d(2)+sep+d(2);
  case 'CZ_NEW':return digits(r,1)+a+digits(r,1,true)+' '+d(4);
  case 'SK_OLD':return a+sep+d(3)+l(2);
@@ -178,6 +179,8 @@ export function historicalPlateAreas(values,schemeId){
  return normalizeAreas(values,scheme);
 }
 export function historicalPlateVariant({scheme,area='',year,month,separator='-',secondHalf=false},random){
+ if(scheme==='HU_OLD')return hungarianOldCivil(year,month,random,separator);
+ if(scheme==='HU_NEW')return hungarianNewCivil(year,month,random,separator);
  return registration(scheme,area,random,separator,year,secondHalf,month);
 }
 
