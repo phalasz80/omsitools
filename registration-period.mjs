@@ -9,7 +9,7 @@ import {VEHICLE_CATEGORIES,specialRulesFor,generateCategoryPlate} from './regist
 const allCategories=new Set(VEHICLE_CATEGORIES.map(x=>x[0]));
 const date=(y,m)=>String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-15';
 const startDay=(y,m)=>String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-01';
-const endDay=(y,m)=>String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-31';
+const endDay=(y,m)=>String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-'+new Date(Date.UTC(y,m,0)).getUTCDate();
 function monthsBetween(fromYear,fromMonth,toYear,toMonth){
  const r=[];
  for(let idx=fromYear*12+fromMonth-1;idx<=toYear*12+toMonth-1;idx++){
@@ -91,9 +91,9 @@ function categoryEntries(categories,schemes,interval,mode,ageYears,options){
    const periods=poolForScheme(s,mode,interval,ageYears);
    for(const m of periods){
     let supported=!!c.template||c.kind==='civil';
-    if(!supported)supported=arr.some(x=>specialRulesFor(s.id,c.kind,m.year,x.code,{allowOrdinary:!!options.allowOrdinary})?.kind==='documented');
+    if(!supported)supported=arr.some(x=>specialRulesFor(s.id,c.kind,m.year,x.code,{allowOrdinary:!!options.allowOrdinary,month:m.month,scheme:s.id})?.kind==='documented');
     if(!supported&&options.allowOrdinary){
-     supported=arr.some(x=>specialRulesFor(s.id,c.kind,m.year,x.code,{allowOrdinary:true})!==null);
+     supported=arr.some(x=>specialRulesFor(s.id,c.kind,m.year,x.code,{allowOrdinary:true,month:m.month,scheme:s.id})!==null);
     }
     if(!supported)continue;
     pool.push({...m,areas:arr,weight:m.weight});
@@ -132,7 +132,7 @@ export function generateHistoricalRegistrations(opts={}){
   const area=pickWeighted(rng,item.areas.map(x=>({code:x.code,weight:x.weight}))).code;
   const manual=category.template;
   const plateFn=()=>historicalPlateVariant({scheme:item.scheme,area,year:item.year,month:item.month,separator:sep},rng);
-  const result=generateCategoryPlate({scheme:item.scheme,category:category.kind,area,year:item.year,separator:sep,random:rng,defaultPlate:plateFn,customPattern:manual,allowOrdinary:!!opts.allowOrdinary});
+  const result=generateCategoryPlate({scheme:item.scheme,category:category.kind,area,year:item.year,month:item.month,separator:sep,random:rng,defaultPlate:plateFn,customPattern:manual,allowOrdinary:!!opts.allowOrdinary});
   if(!result||unique.has(result.plate))continue;
   if(result.plate.length>35)continue;
   unique.add(result.plate);
