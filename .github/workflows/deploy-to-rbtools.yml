@@ -1,0 +1,73 @@
+name: Test and publish OMSI Tools to RegionalBahn
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript modules
+        run: |
+          node --check engine.mjs
+          node --check traffic.mjs
+          node --check app.mjs
+      - name: Regression tests
+        run: node --test tests/*.test.mjs
+
+  publish:
+    needs: tests
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check optional deployment token
+        id: credentials
+        env:
+          RBTOOLS_DEPLOY_TOKEN: ${{ secrets.RBTOOLS_DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$RBTOOLS_DEPLOY_TOKEN" ]; then
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo '::notice::Automatic cross-repository publishing is not configured. CI passed; manual publication is possible.'
+          else
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check out OMSI Tools source
+        if: steps.credentials.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          path: omsi-src
+      - name: Check out rbtools destination
+        if: steps.credentials.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: phalasz80/rbtools
+          ref: main
+          token: ${{ secrets.RBTOOLS_DEPLOY_TOKEN }}
+          path: rbtools
+      - name: Update only the omsitools folder
+        if: steps.credentials.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p rbtools/omsitools
+          find rbtools/omsitools -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+          cp omsi-src/index.html omsi-src/style.css omsi-src/app.mjs omsi-src/engine.mjs omsi-src/traffic.mjs omsi-src/README.md omsi-src/CHANGELOG.md omsi-src/example_overrides.csv rbtools/omsitools/
+          cd rbtools
+          git config user.name "omsitools-deploy[bot]"
+          git config user.email "omsitools-deploy@users.noreply.github.com"
+          git add -A -- omsitools/
+          if git diff --cached --quiet; then
+            echo "No OMSI Tools changes to publish."
+          else
+            git commit -m "Publish OMSI Tools from phalasz80/omsitools"
+            git push origin HEAD:main
+          fi
