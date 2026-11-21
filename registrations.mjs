@@ -169,6 +169,18 @@ export function generateRegistrations(opts={}){
  return {text:rows.join('\r\n')+'\r\n',rows,scheme,year,areas,occurrences:[...occurrences].map(([code,count])=>({code,count})),
   count,month,notes,bytes:rows.reduce((n,p)=>n+p.length+2,0)};
 }
+
+/* Entry points for documented period-oriented selection. Preserve legacy generator. */
+export function historicalPlateRng(seed){return rng(seedFrom(seed));}
+export function historicalPlateAreas(values,schemeId){
+ const scheme=PLATE_SYSTEMS.find(s=>s.id===schemeId);
+ if(!scheme)throw Error('Ismeretlen rendszámrendszer: '+schemeId);
+ return normalizeAreas(values,scheme);
+}
+export function historicalPlateVariant({scheme,area='',year,month,separator='-',secondHalf=false},random){
+ return registration(scheme,area,random,separator,year,secondHalf,month);
+}
+
 export function summarizeReferenceBerlin(text){
  const rows=String(text||'').replace(/\r/g,'').split('\n').map(s=>s.trim()).filter(Boolean);
  const good=rows.filter(s=>/^B-[A-Z]{1,2} [1-9][0-9]{0,3}$/.test(s));
