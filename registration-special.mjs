@@ -34,6 +34,7 @@ export const SPECIAL_SOURCES=Object.freeze({
  at:'https://de.wikipedia.org/wiki/Historische_Kfz-Kennzeichen_(%C3%96sterreich)',
  hu:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Hungary',
  hu_historical:'https://magyarjarmu.hu/tortenet/rendszamok/rendszamok-1958-1990/',
+ hu_modern:'https://klevi.hu/rendszam',
  hr:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Croatia',
  rs:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Serbia',
  gb:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_the_United_Kingdom',
@@ -103,6 +104,20 @@ const SPECIAL=[
  // Hungarian identifiable service series
  {country:'HU',kind:'police',from:1990,to:2022,schemes:['HU_OLD'],title:'Magyar rendőrségi RB',source:'hu',format:q=>'RB'+q.sep+P(q.r,4),note:'Valódi tartományok ennél szűkebbek; nem minden RB-szám bizonyítottan kiadott.'},
  {country:'HU',kind:'ambulance',from:2006,to:2022,schemes:['HU_OLD'],title:'Magyar mentők MA',source:'hu',format:q=>'MA'+q.sep+P(q.r,4)},
+ // 1990–2022 Hungarian specialised series: separated from ordinary first-letter chronology.
+ {country:'HU',kind:'taxi',from:1990,to:2022,schemes:['HU_OLD'],title:'Magyar taxi (EAA–EDZ)',source:'hu_modern',format:q=>'EA'+F(q.r,1)+q.sep+NUM(q.r,3),note:'EAA–EDZ: a rendszám színe sárga, amit a TXT nem ír elő.'},
+ {country:'HU',kind:'military',from:1990,to:2022,schemes:['HU_OLD'],title:'Magyar Honvédség HA',source:'hu_modern',format:q=>'HA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'motorcycle',from:1990,to:2022,schemes:['HU_OLD'],title:'Magyar motorkerékpár U',source:'hu_modern',format:q=>'U'+F(q.r,2)+q.sep+NUM(q.r,3)},
+ {country:'HU',kind:'trailer',from:1990,to:2014,schemes:['HU_OLD'],title:'Magyar pótkocsi X',source:'hu_modern',format:q=>'X'+F(q.r,2)+q.sep+NUM(q.r,3)},
+ {country:'HU',kind:'trailer',from:2015,to:2022,schemes:['HU_OLD'],title:'Magyar pótkocsi W',source:'hu_modern',format:q=>'W'+F(q.r,2)+q.sep+NUM(q.r,3)},
+ {country:'HU',kind:'historic',from:1990,to:2022,schemes:['HU_OLD'],title:'Magyar OT veterán',source:'hu_modern',format:q=>'OT'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'truck',from:1990,to:2022,schemes:['HU_OLD'],title:'Magyar sárga teherfuvarozói F',source:'hu_modern',format:q=>'F'+F(q.r,2)+q.sep+NUM(q.r,3),note:'A jármű típusát a rendszám színe és a F kezdőbetű is jelezhette, de nem minden teherautónak volt ilyen.'},
+ // 2022+ Hungary: distinct official organisations. These are ASCII approximations of the plate, not colours, seals or the coat of arms.
+ {country:'HU',kind:'police',from:2022,fromMonth:7,to:2099,schemes:['HU_NEW'],title:'Magyar rendvédelmi RA',source:'hu_modern',format:q=>'RA'+q.sep+P(q.r,2)+' '+P(q.r,3)},
+ {country:'HU',kind:'military',from:2022,fromMonth:7,to:2099,schemes:['HU_NEW'],title:'Magyar Honvédség HA',source:'hu_modern',format:q=>'HA'+q.sep+P(q.r,2)+' '+P(q.r,3)},
+ {country:'HU',kind:'ambulance',from:2022,fromMonth:7,to:2099,schemes:['HU_NEW'],title:'Magyar mentők MA',source:'hu_modern',format:q=>'MA'+q.sep+P(q.r,2)+' '+P(q.r,3)},
+ {country:'HU',kind:'taxi',from:2022,fromMonth:7,to:2099,schemes:['HU_NEW'],title:'Magyar taxi TX',source:'hu_modern',format:q=>'TX'+q.sep+F(q.r,2)+' '+NUM(q.r,3)},
+ {country:'HU',kind:'historic',from:2022,fromMonth:7,to:2099,schemes:['HU_NEW'],title:'Magyar OT veterán',source:'hu_modern',format:q=>'OT'+q.sep+F(q.r,2)+' '+NUM(q.r,3)},
  // Croatian police blue letters, military HV
  {country:'HR',kind:'police',from:1992,to:2099,title:'Hrvatska policija (kék számok)',source:'hr',format:q=>P(q.r,3)+' '+P(q.r,3),note:'A rendszám színét az OMSI szövegállomány nem képes visszaadni.'},
  {country:'HR',kind:'military',from:1992,to:2099,title:'Hrvatska vojska HV',source:'hr',format:q=>'HV '+NUM(q.r,4)+q.sep+F(q.r,2)},
