@@ -91,7 +91,7 @@ function categoryEntries(categories,schemes,interval,mode,ageYears,options){
    const periods=poolForScheme(s,mode,interval,ageYears);
    for(const m of periods){
     let supported=!!c.template||c.kind==='civil';
-    if(!supported)supported=arr.some(x=>specialRulesFor(s.id,c.kind,m.year,x.code,{allowOrdinary:!!options.allowOrdinary}).kind==='documented');
+    if(!supported)supported=arr.some(x=>specialRulesFor(s.id,c.kind,m.year,x.code,{allowOrdinary:!!options.allowOrdinary})?.kind==='documented');
     if(!supported&&options.allowOrdinary){
      supported=arr.some(x=>specialRulesFor(s.id,c.kind,m.year,x.code,{allowOrdinary:true})!==null);
     }
