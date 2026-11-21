@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {COUNTRIES,REGIONS,CITIES,apiSubdivisionOptions,matchRemoteRegion,codepageFor,countryMeta} from '../geography.mjs';
-import {openHolidayUrl,openHolidayEvents,officialUKEvents,nagerUKEvents,ukHolidayEvents,builtinCityEvents} from '../calendar-sources.mjs';
+import {openHolidayUrl,openHolidayEvents,officialUKEvents,nagerUKEvents,ukHolidayEvents,builtinCityEvents,hungarianStatutoryHolidays} from '../calendar-sources.mjs';
 import {timezoneText,omsiEncode,holidayText,mergeEvents} from '../engine.mjs';
 const by=(country,name)=>CITIES.find(x=>x.country===country&&x.name===name);
 test('All requested 8 countries and all 16 German Bundesländer exist',()=>{
@@ -51,4 +51,29 @@ test('Augsburg city holiday is not automatically attached to entire Bavaria',()=
  assert.equal(builtinCityEvents(city,2026,2027).length,2);
  assert.equal(builtinCityEvents({...city,citySelected:false},2026,2027).length,0);
  assert.match(holidayText(mergeEvents([],builtinCityEvents(city,2026,2026),[],2026,2026),2026,2026),/20260808/);
+});
+
+test('2017 Budapest builds statutory public dates without fabricating school breaks',async()=>{
+ const p={country:'HU',subdivision:'HU-BU',language:'HU',name:'Budapest'};
+ const res=await openHolidayEvents(p,2017,2019,{fetcher:async()=>{throw new Error('2017 source should not be queried');}});
+ assert.equal(res.events.filter(x=>x.kind==='public').length,33);
+ assert.equal(res.events.filter(x=>x.kind==='school').length,0);
+ assert.equal(res.incomplete,true);
+ assert.ok(res.coverage.some(x=>x.year===2017&&x.kind==='school'&&x.status==='HIÁNYZIK'));
+ assert.ok(res.events.some(x=>x.start==='20170414'&&x.name==='Nagypéntek'));
+ assert.ok(res.events.some(x=>x.start==='20170605'&&x.name==='Pünkösdhétfő'));
+});
+test('Missing school year is reported but does not throw when public dates exist',async()=>{
+ const p={country:'HU',subdivision:'HU-BU',language:'HU',name:'Budapest'};
+ const fetcher=async url=>({ok:true,json:async()=>url.includes('PublicHolidays')?[{type:'Public',startDate:'2026-01-01',endDate:'2026-01-01',name:[{language:'HU',text:'Újév'}]}]:[]});
+ const res=await openHolidayEvents(p,2026,2026,{fetcher});
+ assert.equal(res.events.length,1);
+ assert.equal(res.incomplete,true);
+ assert.equal(res.coverage.filter(x=>x.status==='HIÁNYZIK').length,1);
+});
+test('Hungarian statutory fallback dates match legal 2017 introduction and 2027 Easter',()=>{
+ const v=hungarianStatutoryHolidays(2027);
+ assert.equal(v.length,11);
+ assert.ok(v.some(x=>x.start==='20270326'&&x.name==='Nagypéntek'));
+ assert.ok(v.some(x=>x.start==='20270517'&&x.name==='Pünkösdhétfő'));
 });

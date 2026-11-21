@@ -26,18 +26,38 @@ export async function openGroups(country,fetcher=fetch){
  return jsonFrom(OPENHOLIDAYS+'/Groups?countryIsoCode='+encodeURIComponent(country),fetcher);
 }
 export async function openHolidayEvents(place,from,to,{fetcher=fetch,progress=()=>{},group=''}={}){
- const events=[],sources=[];
+ const events=[],sources=[],notes=[],coverage=[];
  for(let year=from;year<=to;year++){
   for(const [endpoint,kind] of [['PublicHolidays','public'],['SchoolHolidays','school']]){
-   progress(`${place.name}: ${year} / ${endpoint}`);
    const url=openHolidayUrl(endpoint,place,year,group);
-   const data=await jsonFrom(url,fetcher),arr=normalizeApi(data,kind,place);
-   if(!arr.length)throw new Error(`${place.name}, ${year}: a(z) ${endpoint} lekérés nem adott egyetlen alkalmazható eseményt sem. Az év teljes naptára nem igazolható; próbálj másik területi vagy iskolatípus-szűrést.`);
-   events.push(...arr);
-   sources.push(url);
+   let arr=[],reason='',statutory=false;
+   if(year<2020){
+    reason='Az OpenHolidays dokumentált időbeli lefedettsége 2020-tól kezdődik.';
+   }else{
+    progress(`${place.name}: ${year} / ${endpoint}`);
+    try{arr=normalizeApi(await jsonFrom(url,fetcher),kind,place);}
+    catch(e){reason=e?.message||String(e);}
+    if(!arr.length&&!reason)reason='Az adatforrás erre az évre és területre nem adott használható eseményt.';
+   }
+   if(!arr.length&&kind==='public'&&place.country==='HU'&&year>=2017){
+    arr=hungarianStatutoryHolidays(year);
+    statutory=true;
+    if(!sources.includes(HU_LAW))sources.push(HU_LAW);
+    if(!sources.includes(HU_GOOD_FRIDAY))sources.push(HU_GOOD_FRIDAY);
+   }
+   if(arr.length){
+    events.push(...arr);
+    if(!statutory)sources.push(url);
+    coverage.push({year,kind,status:statutory?'jogszabályi számítás':'API',count:arr.length});
+    if(statutory)notes.push(`${year}: a magyar munkaszüneti napok jogszabályi szabályok alapján kiszámítva; a szabály és a későbbi jogváltozások ellenőrzendők.`);
+   }else{
+    coverage.push({year,kind,status:'HIÁNYZIK',count:0,reason,url});
+    notes.push(`${year}: ${kind==='school'?'iskolaszünetek':'munkaszüneti napok'} HIÁNYOZNAK (${reason}).`);
+   }
   }
  }
- return {events,sources,notes:[]};
+ if(!events.length)throw new Error(`${place.name}, ${from}–${to}: a források nem adtak alkalmazható eseményeket. A timezone.txt külön elkészíthető, a Holidays.txt-hez saját, ellenőrzött adat szükséges.`);
+ return {events,sources:[...new Set(sources)],notes,coverage,incomplete:coverage.some(x=>x.status==='HIÁNYZIK')};
 }
 const GOV_AREA={'GB-EAW':'england-and-wales','GB-SCT':'scotland','GB-NIR':'northern-ireland'};
 const NAGER_AREAS={'GB-EAW':['GB-ENG','GB-WLS','GB-EAW'],'GB-SCT':['GB-SCT'],'GB-NIR':['GB-NIR']};
