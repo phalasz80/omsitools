@@ -4,6 +4,7 @@
 - Történeti Németország: Nyugat-Berlin/Kelet-Berlin választó, 1970-es és 1980-as évek modellezése, korszakból kilógó járművek alapértelmezett kizárása.
 - Új katalóguspanel kereséssel, részletes javaslatokkal, tételenkénti kijelöléssel és projektbe emeléssel. Üres projekt esetén a közúti fájlgenerálás saját katalógus-ajánlást használ.
 - Az automatikus megjelenési arányok és típusbesorolások heurisztikusak, a modellek OMSI-telepítettsége ellenőrzendő; forráskritikai figyelmeztetés megmarad.
+- Német DIN/EU-, francia FNI/SIV- és magyar 1990/2004/2022-es rendszámváltások időbeli korlátozása, cseh/szlovák 1993-as időhatár. A régi táblák későbbi jelenléte egyszerűsített súlyozással modellezett.
 
 ## 1.2.0 (2026-11-21)
 - Külön NDK / NSZK történeti üzemmód, Berlinnél kötelező East/West kiválasztás.

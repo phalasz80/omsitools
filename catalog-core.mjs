@@ -203,13 +203,23 @@ function plateScore(x,opts,year){
  const target=baseCountry(opts.country||'DE');
  if(!x.plateCountry||x.plateCountry!==target)return -500;
  if(['export','kurz','zabytkowe','taxi','police'].includes(x.plateType))return opts.special?4:-180;
- if(x.plateType==='2022')return year>=2022?32:-500;
- if(x.plateType==='old')return year>=1990&&year<2004?40:-500;
- if(x.plateType==='din')return year<=1994?45:year<=2000?10:-500;
- if(x.plateType==='fni')return year<2009?45:-500;
- if(x.plateType==='1976')return year<2000?35:-500;
- if(x.plateType==='flag')return year>=2000&&year<2006?25:-500;
- if(x.plateType==='euroband')return year>=2001?10:-500;
+ if(target==='DE'){
+  if(x.plateType==='din')return year>=1956&&year<=2000?(year<1995?52:17):-500;
+  if(year<1994)return -500; // modern DE plate cannot be mapped back into 1980s
+ }
+ if(target==='FR'){
+  if(x.plateType==='fni')return year<2009?50:year<=2018?8:-70;
+  if(year<2009)return -500; // French SIV introduced April 2009
+ }
+ if(target==='HU'){
+  if(x.plateType==='old')return year>=1990&&year<2004?46:year<2023&&year>=2004?10:-500;
+  if(x.plateType==='2022')return year>=2022?48:-500;
+  if(year<2004)return -500;
+ }
+ if(['CZ','SK'].includes(target)&&year<1993)return -500;
+ if(x.plateType==='1976')return year>=1976&&year<2000?45:-500;
+ if(x.plateType==='flag')return year>=2000&&year<2006?35:-500;
+ if(x.plateType==='euroband')return year>=2001?16:-500;
  return 20;
 }
 function contextSide(opts){
@@ -273,12 +283,12 @@ export function scoreCatalog(x,opts){
  return points;
 }
 function parent(path){return path.slice(0,path.lastIndexOf('\\')).toLowerCase();}
-function pairPark(ai,parks){
+function pairPark(ai,parks,opts={}){
  const same=parks.filter(p=>p.root.toLowerCase()===ai.root.toLowerCase());
  const matching=same.filter(p=>(p.s3d&&ai.s3d&&p.folder===ai.folder)||
   (!ai.s3d&&p.modelKey===ai.modelKey)||
   (!ai.s3d&&parent(p.path)===parent(ai.path)&&p.modelKey.includes(ai.modelKey.slice(0,7))));
- matching.sort((a,b)=>Number(a.lod)-Number(b.lod)+Number(a.special)-Number(b.special));
+ matching.sort((a,b)=>Math.abs(Number(a.lod)-Number(!!opts.lod))-Math.abs(Number(b.lod)-Number(!!opts.lod))||Number(a.special)-Number(b.special));
  return matching[0]||null;
 }
 const compare=(a,b)=>b.score-a.score||a.label.localeCompare(b.label,'hu')||a.path.localeCompare(b.path);
@@ -293,7 +303,7 @@ export function recommendCatalog(options={}){
  const p=rawPark.filter(eligible).map(x=>({...x,score:scoreCatalog(x,{...opts,year})})).filter(x=>x.score>0).sort(compare);
  const selectedPark=[],selectedParkPaths=new Set();
  for(const a of preferred){
-  const paired=pairPark(a,p);
+  const paired=pairPark(a,p,opts);
   if(paired&&!selectedParkPaths.has(paired.path)){selectedPark.push(paired);selectedParkPaths.add(paired.path);}
  }
  for(const x of p){if(selectedPark.length>=maxPark)break;if(selectedParkPaths.has(x.path))continue;
@@ -303,7 +313,7 @@ export function recommendCatalog(options={}){
  const parkByKey=new Map(selectedPark.map(x=>[x.pathKey,x]));
  const records=[];
  for(const x of preferred){
-  const parked=pairPark(x,selectedPark)||parkByKey.get(x.pathKey);
+  const parked=pairPark(x,selectedPark,opts)||parkByKey.get(x.pathKey);
   const group=x.kind==='truck'?'Trucks':x.kind==='van'?'Commercials':x.kind==='taxi'?'Taxi':x.kind==='emergency'?'Police':contextSide(opts)==='east'&&x.origin==='east'?'GDRCars':'NormalCars';
   const from=String(x.modelStart||''), to=String(Math.min(2099,(x.modelEnd||year)+18));
   const evidence='Saját referenciafájl: kozuti_ai.txt'+(parked?', kozut_parklist.txt':'')+'; '+x.quality+'. Az időszaki és területi gyakoriság becslés, nem igazolt forgalmi adat.';

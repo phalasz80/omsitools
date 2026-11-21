@@ -45,3 +45,16 @@ test('unknown generation excluded until explicitly requested',()=>{
  assert.ok(r.ai.every(x=>x.known));
  assert.ok(r.park.every(x=>x.known));
 });
+
+test('old German era rejects EU-plate AI and prefers DIN',()=>{
+ const r=recommendCatalog({country:'DE',region:'DE-NW',year:1986,maxAI:250,maxPark:1});
+ assert.ok(r.ai.filter(x=>x.s3d).every(x=>x.plateType==='din'));
+});
+test('French 2005 excludes modern SIV plates',()=>{
+ const r=recommendCatalog({country:'FR',year:2005,maxAI:200,maxPark:4});
+ assert.ok(r.ai.filter(x=>x.s3d).every(x=>x.plateType==='fni'));
+});
+test('Hungarian 2001 excludes EU and new plates',()=>{
+ const r=recommendCatalog({country:'HU',region:'HU-BU',year:2001,maxAI:250,maxPark:2});
+ assert.ok(r.ai.filter(x=>x.s3d).every(x=>x.plateType==='old'));
+});
