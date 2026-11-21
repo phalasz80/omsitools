@@ -33,6 +33,7 @@ export const SPECIAL_SOURCES=Object.freeze({
  ch:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Switzerland',
  at:'https://de.wikipedia.org/wiki/Historische_Kfz-Kennzeichen_(%C3%96sterreich)',
  hu:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Hungary',
+ hu_historical:'https://magyarjarmu.hu/tortenet/rendszamok/rendszamok-1958-1990/',
  hr:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Croatia',
  rs:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Serbia',
  gb:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_the_United_Kingdom',
@@ -62,7 +63,7 @@ export function customPlate(pattern,{area='',separator='-',year=2020},random){
 const SPECIAL=[
  // Germany: regionless military or service prefix, official code dates
  {country:'DE',kind:'military',from:1956,to:2099,title:'Bundeswehr Y',source:'de',format:(q)=>'Y'+q.sep+NUM(q.r,6)},
- {country:'DE',kind:'thw',from:1996,to:2099,title:'THW',source:'de',format:(q)=>'THW'+q.sep+N(q.r,8000,89999)},
+ {country:'DE',kind:'thw',from:1996,fromMonth:11,to:2099,title:'THW',source:'de',format:(q)=>'THW'+q.sep+N(q.r,8000,89999)},
  {country:'DE',kind:'post',from:1956,to:1994,title:'Deutsche Bundespost BP (1995 előtt)',source:'de_codes',format:q=>'BP'+q.sep+NUM(q.r,4)},
  {country:'DE',kind:'rail',from:1956,to:1993,title:'Deutsche Bundesbahn DB',source:'de_codes',format:q=>'DB'+q.sep+NUM(q.r,4)},
  {country:'DE',kind:'police',from:1956,to:2007,title:'Korábbi német hatósági rendszám (2007-ig)',source:'de',format:q=>q.area+q.sep+N(q.r,3000,7999),note:'Az egyes helyi hatósági számtartományok eltérhetnek, a rendőrséghez rendelt sorok nem mindenhol egységesek.'},
@@ -74,17 +75,31 @@ const SPECIAL=[
  {country:'DD',kind:'military',from:1956,to:1975,title:'NVA VA korai számsor',source:'dd',format:q=>'VA '+N(q.r,1,9)+q.sep+P(q.r,4)},
  {country:'DD',kind:'military',from:1976,to:1990,title:'NVA VA késői számsor',source:'dd',format:q=>'VA '+N(q.r,10,99)+q.sep+P(q.r,4)},
  {country:'DD',kind:'police',from:1953,to:1990,title:'Volkspolizei VP körzeti sorozat',source:'dd',format:q=>'VP '+({I:'00',R:'12',S:'13',T:'14',D:'04',E:'05',Z:'06',H:'07',K:'08',L:'09',N:'10',O:'11',C:'03'}[q.area]||'00')+q.sep+P(q.r,4),note:'A területi kódok körzetenként változtak; egyes körzetekhez a történeti táblázat ellenőrzendő.'},
- {country:'DD',kind:'border',from:1961,to:1990,title:'Grenztruppen GT',source:'dd',format:q=>(q.year===1990?'GS':'GT')+' '+NUM(q.r,2)+q.sep+P(q.r,4),note:'A GT–GS átállás 1990-ben nem január 1-jén történt; a pontos hónapot is vizsgálni kell.'},
+ {country:'DD',kind:'border',from:1961,to:1990,title:'Grenztruppen GT',source:'dd',format:q=>(q.year===1990&&q.month>=3?'GS':'GT')+' '+NUM(q.r,2)+q.sep+P(q.r,4),note:'A GT–GS átállás 1990-ben nem január 1-jén történt; a pontos hónapot is vizsgálni kell.'},
  // Austrian state fleet codes
  {country:'AT',kind:'military',from:1967,to:2099,title:'Bundesheer BH',source:'at',format:q=>'BH'+q.sep+N(q.r,100,99999)},
- {country:'AT',kind:'police',from:1967,to:2005,title:'Bundesgendarmerie BG',source:'at',format:q=>'BG'+q.sep+N(q.r,100,99999)},
- {country:'AT',kind:'police',from:2005,to:2099,title:'Bundespolizei BP',source:'at',format:q=>'BP'+q.sep+N(q.r,100,99999)},
+ {country:'AT',kind:'police',from:1967,to:2005,toMonth:6,title:'Bundesgendarmerie BG',source:'at',format:q=>'BG'+q.sep+N(q.r,100,99999)},
+ {country:'AT',kind:'police',from:2005,fromMonth:7,to:2099,title:'Bundespolizei BP',source:'at',format:q=>'BP'+q.sep+N(q.r,100,99999)},
  {country:'AT',kind:'post',from:1967,to:1990,title:'Post- und Telegraphenverwaltung PT',source:'at',format:q=>'PT'+q.sep+N(q.r,100,99999),note:'A postai különkód megszűnésének pontos napja régiónként ellenőrzendő.'},
  // Swiss old federal/post and military
  {country:'CH',kind:'military',from:1950,to:2099,title:'Schweizer Armee M',source:'ch',format:q=>'M '+N(q.r,1,999999)},
  {country:'CH',kind:'post',from:1950,to:2004,title:'Schweizer PTT P',source:'ch',format:q=>'P '+N(q.r,10000,79999)},
  {country:'CH',kind:'rail',from:1950,to:2004,title:'SBB P',source:'ch',format:q=>'P '+N(q.r,80000,99999)},
  {country:'CH',kind:'government',from:1950,to:2004,title:'Bundesverwaltung A',source:'ch',format:q=>'A '+N(q.r,10000,79999)},
+ // 1958–1990 Hungary: the first two letters encode the actual vehicle/service category.
+ {country:'HU',kind:'taxi',from:1958,to:1988,title:'Magyar szocialista taxi JA',source:'hu_historical',format:q=>'JA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'police',from:1958,to:1990,title:'Magyar rendőrség RA',source:'hu_historical',format:q=>'RA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'military',from:1958,to:1990,title:'Magyar honvédség HA',source:'hu_historical',format:q=>'HA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'border',from:1958,to:1990,title:'Magyar határőrség HR',source:'hu_historical',format:q=>'HR'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'ambulance',from:1958,to:1990,title:'Országos Mentőszolgálat MA',source:'hu_historical',format:q=>'MA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'fire',from:1958,to:1990,title:'Tűzoltóság TU',source:'hu_historical',format:q=>'TU'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'post',from:1958,to:1990,title:'Magyar Posta PA',source:'hu_historical',format:q=>'PA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'trailer',from:1958,to:1990,title:'Magyar utánfutók XS',source:'hu_historical',format:q=>'XS'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'motorcycle',from:1958,to:1990,title:'Magyar motorkerékpárok E/KA',source:'hu_historical',format:q=>(q.year<1976?'EA':'KA')+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'bus',from:1958,to:1990,title:'Magyar közforgalmú buszok GA',source:'hu_historical',format:q=>'GA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'truck',from:1958,to:1990,title:'Magyar közületi teherautók FA',source:'hu_historical',format:q=>'FA'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'government',from:1958,to:1990,title:'Magyar állami szolgálati AB',source:'hu_historical',format:q=>'AB'+q.sep+P(q.r,2)+' '+P(q.r,2)},
+ {country:'HU',kind:'diplomatic',from:1958,to:1990,title:'Magyar diplomáciai DT',source:'hu_historical',format:q=>'DT'+q.sep+P(q.r,2)+' '+P(q.r,2)},
  // Hungarian identifiable service series
  {country:'HU',kind:'police',from:1990,to:2022,title:'Magyar rendőrségi RB',source:'hu',format:q=>'RB'+q.sep+P(q.r,4),note:'Valódi tartományok ennél szűkebbek; nem minden RB-szám bizonyítottan kiadott.'},
  {country:'HU',kind:'ambulance',from:2006,to:2022,title:'Magyar mentők MA',source:'hu',format:q=>'MA'+q.sep+P(q.r,4)},
@@ -117,7 +132,7 @@ export function specialRulesFor(scheme,category,year,area='',options={}){
  if(!CATEGORY_IDS.has(category))throw Error('Ismeretlen járműkategória: '+category);
  if(category==='civil')return {kind:'ordinary',title:'Normál polgári rendszám',source:'',confidence:'regular'};
  const country=SCHEME_COUNTRY[scheme]||scheme.slice(0,2);
- const selected=SPECIAL.find(x=>x.country===country&&x.kind===category&&year>=x.from&&year<=x.to&&(!x.onlyArea||x.onlyArea.includes(area)));
+ const selected=SPECIAL.find(x=>x.country===country&&x.kind===category&&year>=x.from&&year<=x.to&&(!x.fromMonth||year>x.from||Number(options.month||6)>=x.fromMonth)&&(!x.toMonth||year<x.to||Number(options.month||6)<=x.toMonth)&&(!x.onlyArea||x.onlyArea.includes(area)));
  if(selected)return {...selected,kind:'documented',confidence:selected.note?'partial':'documented'};
  if(ordinaryCategories.has(category)&&options.allowOrdinary){
   return {kind:'ordinary',title:'Hagyományos közúti rendszám: a '+category+' nem mindenütt külön alfanumerikus sorozat',source:'',confidence:'ordinary_unverified',
@@ -125,11 +140,11 @@ export function specialRulesFor(scheme,category,year,area='',options={}){
  }
  return null;
 }
-export function generateCategoryPlate({scheme,category,area,year,separator,random,defaultPlate,customPattern,allowOrdinary=false}){
+export function generateCategoryPlate({scheme,category,area,year,month=6,separator,random,defaultPlate,customPattern,allowOrdinary=false}){
  if(customPattern){
   return {plate:customPlate(customPattern,{area,year,separator},random),rule:{kind:'custom',title:'Felhasználói minta, nem ellenőrzött történeti rendszám',confidence:'fictional',source:''}};
  }
- const rule=specialRulesFor(scheme,category,year,area,{allowOrdinary});
+ const rule=specialRulesFor(scheme,category,year,area,{allowOrdinary,month});
  if(!rule)return null;
- return {plate:rule.format?rule.format({r:random,year,area,sep:separator}):defaultPlate(),rule};
+ return {plate:rule.format?rule.format({r:random,year,month,area,sep:separator}):defaultPlate(),rule};
 }
