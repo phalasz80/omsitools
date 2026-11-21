@@ -3,6 +3,12 @@
  * Date uncertainty remains explicit instead of pretending all series were issued.
  */
 export const PLATE_HISTORY=Object.freeze({
+ HU_PRE90:{from:'1958-01-01',to:'1990-08-05',confidence:'published',source:'https://magyarjarmu.hu/tortenet/rendszamok/rendszamok-1958-1990/',continued:true,warning:'A magánrendszám sorozatainak évhez rendelése közelítő, a kiadott betűkészletek helyi és időbeli átfedései előfordulhattak.'},
+ AT_PRE90:{from:'1947-01-01',to:'1990-12-31',confidence:'published',source:'https://de.wikipedia.org/wiki/Historische_Kfz-Kennzeichen_(%C3%96sterreich)',continued:true,warning:'Az 1947–1990-es osztrák tartományi rész-sorszámok alapján a belső járáskiosztás nem állítható vissza teljes bizonyossággal.'},
+ RS_YUG:{from:'1960-01-01',to:'2010-12-31',confidence:'approximate',source:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Yugoslavia',continued:true,warning:'A jugoszláv, majd szerb rendszámok 1960–2010-es regionális variánsaihoz külön korszakos ellenőrzés szükséges.'},
+ HR_YUG:{from:'1960-01-01',to:'1991-12-31',confidence:'approximate',source:'https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Yugoslavia',continued:true},
+ UK_DATELESS:{from:'1904-01-01',to:'1963-01-31',confidence:'published',source:'https://dvlaregistrations.dvla.gov.uk/help/?id=q_prefix',continued:true},
+ UK_NI:{from:'1950-01-01',to:null,confidence:'approximate',source:'https://www.pnld.co.uk/assets/D3375-The-Road-Vehicles-%28Display-of-Registration-Marks%29-Regulations-2001',continued:true,warning:'Észak-Írország saját területi betűrendszere nem a brit korjelölő sorozatokat követi.'},
  HU_OLD:{from:'1990-08-06',to:'2022-06-30',confidence:'official',source:'https://njt.jog.gov.hu/jogszabaly/2011-326-20-22.75',continued:true},
  HU_NEW:{from:'2022-07-01',to:null,confidence:'official',source:'https://njt.jog.gov.hu/jogszabaly/2021-303-K3-22',continued:true},
  CS_OLD:{from:'1960-01-01',to:'1992-12-31',confidence:'approximate',source:'',continued:true,warning:'A csehszlovák járási betűkombinációk és a korabeli kibocsátási sorozatok részleges rekonstrukciók.'},
