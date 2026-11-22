@@ -21,6 +21,9 @@ jobs:
           node --check engine.mjs
           node --check traffic.mjs
           node --check app.mjs
+          node --check kmk-summer-data.mjs
+          node --check kmk-summer.mjs
+          node --check school-api.mjs
           node --check catalog-data.mjs
           node --check catalog-core.mjs
           node --check registrations.mjs
@@ -66,7 +69,7 @@ jobs:
           set -euo pipefail
           mkdir -p rbtools/omsitools
           find rbtools/omsitools -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
-          cp omsi-src/index.html omsi-src/style.css omsi-src/app.mjs omsi-src/engine.mjs omsi-src/traffic.mjs omsi-src/geography.mjs omsi-src/calendar-sources.mjs omsi-src/README.md omsi-src/CHANGELOG.md omsi-src/CATALOG_RESEARCH.md omsi-src/registrations.mjs omsi-src/registration-history.mjs omsi-src/registration-special.mjs omsi-src/registration-period.mjs omsi-src/fleet-evidence.mjs omsi-src/example_overrides.csv rbtools/omsitools/
+          cp omsi-src/index.html omsi-src/style.css omsi-src/app.mjs omsi-src/engine.mjs omsi-src/traffic.mjs omsi-src/geography.mjs omsi-src/calendar-sources.mjs omsi-src/kmk-summer-data.mjs omsi-src/kmk-summer.mjs omsi-src/school-api.mjs omsi-src/historical-germany.mjs omsi-src/README.md omsi-src/CHANGELOG.md omsi-src/CATALOG_RESEARCH.md omsi-src/registrations.mjs omsi-src/registration-history.mjs omsi-src/registration-special.mjs omsi-src/registration-period.mjs omsi-src/fleet-evidence.mjs omsi-src/example_overrides.csv rbtools/omsitools/
           mkdir -p rbtools/omsitools/references
           cp -a omsi-src/references/. rbtools/omsitools/references/
           cd rbtools
