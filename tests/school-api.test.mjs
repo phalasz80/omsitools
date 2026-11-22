@@ -23,7 +23,7 @@ test('2017 Berlin historical calendar keeps official KMK summer and adds autumn 
  assert.equal(summer.length,1);
  assert.equal(summer[0].source.includes('kmk.org'),true);
  assert.ok(res.events.some(x=>x.kind==='school'&&/Herbstferien/.test(x.name)));
- assert.ok(res.notes.some(x=>x.includes('ELTÉRÉS')));
+ assert.ok(!res.notes.some(x=>x.includes('ELTÉRÉS')));
  assert.equal(res.coverage.find(x=>x.kind==='school').status,'RÉSZLEGES');
 });
 test('2017 API outage falls back to KMK official summer dates without inventing other breaks',async()=>{
@@ -55,4 +55,12 @@ test('third party failure never mutates official event dates and exposes the err
  const r=await openHolidayEvents(p,2018,2018,{fetcher:async()=>({ok:false,status:429,json:async()=>({})})});
  assert.ok(r.events.some(x=>x.kind==='school'&&x.start==='20180726'));
  assert.ok(r.notes.join(' ').includes('429'));
+});
+
+test('KMK summer conflicts do not override the archival date and are explicitly logged',async()=>{
+ const p={country:'DE',subdivision:'DE-BE',name:'Berlin'};
+ const api=[{stateCode:'BE',name:'sommerferien',start:'2017-07-20T22:00',end:'2017-09-01T22:00'}];
+ const r=await openHolidayEvents(p,2017,2017,{fetcher:async()=>({ok:true,json:async()=>api})});
+ assert.ok(r.notes.some(x=>x.includes('ELTÉRÉS')));
+ assert.equal(r.events.find(x=>x.kind==='school'&&/Sommerferien/.test(x.name)).start,'20170720');
 });

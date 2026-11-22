@@ -91,7 +91,7 @@ export async function openHolidayEvents(place,from,to,{fetcher=fetch,progress=()
   }
  }
  if(!events.length)throw new Error(`${place.name}, ${from}–${to}: az adatforrás nem adott alkalmazható eseményt. A timezone.txt külön elkészíthető, a Holidays.txt-hez saját, ellenőrzött adat szükséges.`);
- return {events,sources:[...new Set(sources)],notes,coverage,incomplete:coverage.some(x=>x.status==='HIÁNYZIK')};
+ return {events,sources:[...new Set(sources)],notes,coverage,incomplete:coverage.some(x=>['HIÁNYZIK','RÉSZLEGES'].includes(x.status))};
 }
 
 /* Hungarian nationwide statutory holidays, not school breaks. The 2017 law added Good Friday. */
